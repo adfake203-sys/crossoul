@@ -192,6 +192,7 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
   
   // Drag Pattern State
   const [isDragging, setIsDragging] = useState(false);
+  const [holdTime, setHoldTime] = useState(0);
   const [pointerPos, setPointerPos] = useState<{ x: number, y: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -200,11 +201,13 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
   const triggerError = () => {
     const randomMsg = comedyErrors[Math.floor(Math.random() * comedyErrors.length)];
     setErrorModal({ isOpen: true, message: randomMsg });
-    HapticManager.pattern([100, 50, 100]); // Strong pop
+    HapticManager.notification(); // Smoother error feel
     
     // Total reset for early lift or mistake
     setConnectedCount(0); 
     setIsDragging(false);
+    setHoldTime(0);
+    HapticManager.stopResonance();
     setPointerPos(null);
     setActiveNodes(generateRandomNodes());
   };
@@ -237,11 +240,32 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
     }
 
     setIsDragging(true);
+    setHoldTime(0);
     setConnectedCount(connectedCount + 1);
     const targetNode = activeNodes[index];
     setPointerPos({ x: targetNode.x, y: targetNode.y });
     HapticManager.light();
+    HapticManager.startResonance(0);
   };
+
+  useEffect(() => {
+    let interval: any;
+    if (isDragging && !isCompleted) {
+        interval = setInterval(() => {
+            setHoldTime(prev => {
+                const next = prev + 0.05;
+                HapticManager.startResonance(Math.min(1, next / 2)); // Max intensity after 2 seconds
+                return next;
+            });
+        }, 50);
+    } else {
+        HapticManager.stopResonance();
+    }
+    return () => {
+        clearInterval(interval);
+        HapticManager.stopResonance();
+    };
+  }, [isDragging, isCompleted]);
 
   const trackDrag = (e: React.PointerEvent) => {
     if (!isDragging || isCompleted) return;
@@ -271,8 +295,10 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
             // FULLY COMPLETE
             setIsCompleted(true);
             setIsDragging(false);
+            setHoldTime(0);
             setPointerPos(null);
             HapticManager.success();
+            HapticManager.stopResonance();
             setTimeout(() => setShowBadge(true), 1500);
           }
           break;
@@ -290,8 +316,10 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
       // Released finger early -> Drop the pattern!
       setConnectedCount(0);
       setIsDragging(false);
+      setHoldTime(0);
       setPointerPos(null);
-      HapticManager.pattern([50, 50, 50]); // disappointed vibration
+      HapticManager.stopResonance();
+      HapticManager.notification(); // smoother disappointed feel
     }
   };
 
@@ -311,12 +339,14 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
       >
         <div style={{ maxWidth: '800px', margin: '0 auto', marginBottom: '3rem' }}>
           <h2 style={{ 
+            fontFamily: 'var(--font-heading)',
             fontSize: 'clamp(2rem, 5vw, 3.5rem)', 
             fontWeight: 900, 
             color: isCompleted ? '#6366f1' : '#fff',
             textShadow: isCompleted ? '0 0 30px rgba(99, 102, 241, 0.5)' : 'none',
             transition: 'all 0.5s ease',
-            lineHeight: 1
+            lineHeight: 1,
+            letterSpacing: '-2px'
           }}>
             {isCompleted ? 'WE ARE INFINITE' : 'BUILD THE MOVEMENT.'}
           </h2>
@@ -459,7 +489,8 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
                     fontSize: '0.65rem',
                     color: isReached ? '#fff' : '#52525b',
                     fontWeight: 800,
-                    letterSpacing: '1px'
+                    letterSpacing: '0.5px',
+                    fontFamily: 'var(--font-body)'
                   }}>
                     {node.label}
                   </span>

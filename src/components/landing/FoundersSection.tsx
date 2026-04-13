@@ -76,17 +76,17 @@ export default function FoundersSection() {
            style={{ textAlign: 'center', marginBottom: isMobile ? '3rem' : '4rem' }}
         >
           <h2 style={{ 
-            fontSize: 'clamp(1.2rem, 4vw, 2.2rem)', 
-            fontWeight: 800, 
+            fontFamily: 'var(--font-accent)',
+            fontSize: 'clamp(1.5rem, 5vw, 3rem)', 
+            fontWeight: 400, 
             color: '#fff', 
-            lineHeight: 1.4, 
+            lineHeight: 1.2, 
             maxWidth: '1000px', 
             margin: '0 auto',
-            letterSpacing: '-0.5px',
-            fontStyle: 'italic',
-            opacity: 0.9
+            letterSpacing: '0px',
+            opacity: 0.95
           }}>
-            "We built this because <span style={{ color: '#6366f1' }}>we were these students.</span> Sitting in a tier-2 city, with things to say and nowhere to say them. Crossoul is the platform we needed and nobody built. <span style={{ color: '#6366f1' }}>So we did.</span>"
+            "We built this because <span style={{ color: '#6366f1', fontFamily: 'var(--font-accent)', fontStyle: 'italic' }}>we were these students.</span> Sitting in a tier-2 city, with things to say and nowhere to say them. Crossoul is the platform we needed and nobody built. <span style={{ color: '#6366f1', fontFamily: 'var(--font-accent)', fontStyle: 'italic' }}>So we did.</span>"
           </h2>
         </motion.div>
 
@@ -125,10 +125,11 @@ export default function FoundersSection() {
             style={{ textAlign: 'center', maxWidth: '600px' }}
           >
             <p style={{ 
+              fontFamily: 'var(--font-body)',
               color: '#71717a', 
               fontSize: isMobile ? '0.85rem' : '1rem', 
               lineHeight: 1.6, 
-              letterSpacing: '0.5px',
+              letterSpacing: '0.2px',
               fontStyle: 'italic',
               margin: 0
             }}>

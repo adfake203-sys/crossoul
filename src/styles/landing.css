@@ -1,10 +1,5 @@
-.landing-page-wrapper {
-  min-height: 100vh;
-  background: #09090b; /* Zinc 950 - Premium Dark */
-  color: #fafafa;
-  overflow-x: hidden;
   position: relative;
-  font-family: var(--sans, system-ui, -apple-system, sans-serif);
+  font-family: var(--font-body);
   -webkit-tap-highlight-color: transparent;
   user-select: none;
 }
@@ -42,10 +37,11 @@
 }
 
 .hero-title {
+  font-family: var(--font-heading);
   font-size: clamp(2.5rem, 8vw, 5rem);
   font-weight: 950;
-  line-height: 1.1;
-  letter-spacing: -2px;
+  line-height: 1;
+  letter-spacing: -3.5px;
   margin-bottom: 1.5rem;
   color: #ffffff;
 }
@@ -118,13 +114,13 @@
 }
 
 .nav-logo {
-  /* Muted Indigo/Violet text */
+  font-family: var(--font-heading);
   background: linear-gradient(to right, #a5b4fc, #c4b5fd);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   font-size: 1.8rem;
   font-weight: 900;
-  letter-spacing: -1px;
+  letter-spacing: -1.5px;
 }
 
 .outline-btn {
@@ -176,10 +172,12 @@
 }
 
 .step-title {
+  font-family: var(--font-heading);
   font-size: 1.5rem;
   font-weight: 800;
   margin-bottom: 1rem;
   color: #ffffff;
+  letter-spacing: -0.5px;
 }
 
 .step-desc {
@@ -196,10 +194,12 @@
 }
 
 .eco-title {
+  font-family: var(--font-heading);
   font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 900;
   margin-bottom: 2rem;
   color: #ffffff;
+  letter-spacing: -1.5px;
 }
 
 .eco-map {

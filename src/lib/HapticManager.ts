@@ -4,80 +4,82 @@
  */
 
 let pulseInterval: any = null;
+let resonanceInterval: any = null;
 
 export const HapticManager = {
   /**
-   * Triggers an ultra-short 'impact' vibration (15ms)
-   * Good for dragging or subtle movement
+   * Triggers an ultra-sharp 'pop' (8ms)
+   * Feels like a high-end physical click
    */
   impact: () => {
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-      navigator.vibrate(15);
+      navigator.vibrate(8);
     }
   },
 
   /**
-   * Triggers a 'selection' click vibration (30ms)
-   * Perfect for button taps and UI toggles
+   * Triggers a slightly more present 'selection' tick (12ms)
    */
   selection: () => {
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-      navigator.vibrate(30);
+      navigator.vibrate(12);
     }
   },
 
   /**
-   * Triggers a light 'pop' vibration (50ms)
+   * Triggers a crisp 'light' feedback (20ms)
    */
   light: () => {
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-      navigator.vibrate(50);
+      navigator.vibrate(20);
     }
   },
 
   /**
-   * Triggers a strong 'success' vibration (200ms)
+   * Triggers a smooth, present 'success' wave
    */
   success: () => {
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-      navigator.vibrate(200);
+      navigator.vibrate([30, 40, 60]);
     }
   },
 
   /**
-   * Triggers a 'notification' double pulse 
-   * Good for completions and match success
+   * High-end double-tap notification
    */
   notification: () => {
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-      navigator.vibrate([40, 50, 40]);
+      navigator.vibrate([10, 30, 10]);
     }
   },
 
   /**
-   * Starts a repeated pulsing vibration (for holding)
+   * RESONANCE ENGINE:
+   * Fires ultra-short pulses (5ms) at a specific frequency.
+   * intensity: 0 to 1
    */
-  startPulse: () => {
+  startResonance: (intensity: number) => {
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-      if (pulseInterval) return;
-      pulseInterval = setInterval(() => {
-        navigator.vibrate(70);
-      }, 150);
+      if (resonanceInterval) clearInterval(resonanceInterval);
+      
+      // Map intensity to frequency (100ms down to 30ms)
+      const delay = Math.max(30, 100 - (intensity * 70));
+      
+      resonanceInterval = setInterval(() => {
+        navigator.vibrate(5); // Ultra-short resonance tick
+      }, delay);
+    }
+  },
+
+  stopResonance: () => {
+    if (resonanceInterval) {
+      clearInterval(resonanceInterval);
+      resonanceInterval = null;
     }
   },
 
   /**
-   * Stops the repeated pulsing
-   */
-  stopPulse: () => {
-    if (pulseInterval) {
-      clearInterval(pulseInterval);
-      pulseInterval = null;
-    }
-  },
-
-  /**
-   * Triggers a complex pattern
+   * LEGACY: Custom pattern support
    */
   pattern: (p: number[]) => {
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {

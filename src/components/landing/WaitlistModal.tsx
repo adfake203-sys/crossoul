@@ -87,12 +87,40 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
 
             {!isSubmitted ? (
               <>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 0.8rem', background: 'rgba(123, 45, 142, 0.1)', borderRadius: '20px', color: '#a5b4fc', fontSize: '0.75rem', fontWeight: 700, marginBottom: '1.5rem' }}>
+                <div style={{ 
+                    fontFamily: 'var(--font-body)',
+                    display: 'inline-flex', 
+                    alignItems: 'center', 
+                    gap: '0.5rem', 
+                    padding: '0.4rem 0.8rem', 
+                    background: 'rgba(123, 45, 142, 0.1)', 
+                    borderRadius: '20px', 
+                    color: '#a5b4fc', 
+                    fontSize: '0.75rem', 
+                    fontWeight: 700, 
+                    marginBottom: '1.5rem',
+                    letterSpacing: '0.5px'
+                }}>
                   <Sparkles size={14} /> JOIN THE MOVEMENT
                 </div>
 
-                <h2 style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '1rem', color: '#fff', letterSpacing: '-1px' }}>Enter the Circle</h2>
-                <p style={{ color: '#a1a1aa', fontSize: '0.95rem', lineHeight: '1.6', marginBottom: '2rem' }}>
+                <h2 style={{ 
+                    fontFamily: 'var(--font-heading)',
+                    fontSize: '2.5rem', 
+                    fontWeight: 900, 
+                    marginBottom: '1rem', 
+                    color: '#fff', 
+                    letterSpacing: '-1.5px',
+                    lineHeight: 1
+                }}>Enter the Circle</h2>
+                <p style={{ 
+                    fontFamily: 'var(--font-body)',
+                    color: '#a1a1aa', 
+                    fontSize: '1rem', 
+                    lineHeight: '1.5', 
+                    marginBottom: '2rem',
+                    letterSpacing: '-0.2px'
+                }}>
                   Experience a mindful world of resonance. Be the first to know when we launch the next phase of human connection.
                 </p>
 
@@ -128,6 +156,7 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
                     type="submit"
                     disabled={isLoading}
                     style={{
+                      fontFamily: 'var(--font-heading)',
                       width: '100%',
                       padding: '1.2rem',
                       background: isLoading ? '#3f3f46' : 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)',
@@ -135,7 +164,8 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
                       border: 'none',
                       borderRadius: '16px',
                       fontWeight: 800,
-                      fontSize: '1rem',
+                      fontSize: '1.1rem',
+                      letterSpacing: '0.5px',
                       cursor: isLoading ? 'not-allowed' : 'pointer',
                       display: 'flex',
                       alignItems: 'center',
