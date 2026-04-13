@@ -1,6 +1,8 @@
 import React, { type ReactNode, useRef } from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 
+import { HapticManager } from '../../lib/HapticManager';
+
 interface Props {
   children: ReactNode;
   className?: string;
@@ -9,6 +11,11 @@ interface Props {
 
 export default function MagneticButton({ children, className, onClick }: Props) {
   const ref = useRef<HTMLButtonElement>(null)
+  
+  const handleClick = () => {
+    HapticManager.selection();
+    if (onClick) onClick();
+  }
   const x = useMotionValue(0)
   const y = useMotionValue(0)
 
@@ -39,7 +46,7 @@ export default function MagneticButton({ children, className, onClick }: Props) 
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       className={className}
-      onClick={onClick}
+      onClick={handleClick}
       whileTap={{ scale: 0.9 }}
       transition={{ type: 'spring', stiffness: 400, damping: 17 }}
     >

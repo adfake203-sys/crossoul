@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { HapticManager } from '../../lib/HapticManager';
 
 export default function CardSwap({ children }: { children: React.ReactNode[] }) {
   const [cards, setCards] = useState(() => children.map((_, i) => i));
 
   const handleSwap = () => {
+    HapticManager.selection();
     setCards((prev) => {
       const newCards = [...prev];
       const top = newCards.shift();
@@ -49,6 +51,7 @@ export default function CardSwap({ children }: { children: React.ReactNode[] }) 
               drag={isTop ? 'x' : false}
               dragConstraints={{ left: 0, right: 0 }}
               dragElastic={0.8}
+              onDrag={() => HapticManager.impact()}
               onDragEnd={(_, { offset, velocity }) => {
                 if (Math.abs(offset.x) > 50 || Math.abs(velocity.x) > 300) {
                   handleSwap();

@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Linkedin } from 'lucide-react';
+import { HapticManager } from '../../lib/HapticManager';
 
 interface FounderPopupProps {
   isOpen: boolean;
@@ -17,7 +18,18 @@ interface FounderPopupProps {
 }
 
 const FounderPopup: React.FC<FounderPopupProps> = ({ isOpen, onClose, founder, logoSrc }) => {
+  useEffect(() => {
+    if (isOpen) {
+      HapticManager.selection();
+    }
+  }, [isOpen]);
+
   if (!founder) return null;
+
+  const handleClose = () => {
+    HapticManager.selection();
+    onClose();
+  };
 
   return (
     <AnimatePresence>
@@ -38,7 +50,7 @@ const FounderPopup: React.FC<FounderPopupProps> = ({ isOpen, onClose, founder, l
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
+            onClick={handleClose}
             style={{ 
               position: 'absolute', 
               inset: 0, 
@@ -71,7 +83,7 @@ const FounderPopup: React.FC<FounderPopupProps> = ({ isOpen, onClose, founder, l
 
             {/* Close Button */}
             <button 
-              onClick={onClose}
+              onClick={handleClose}
               style={{
                 position: 'absolute',
                 top: '1.25rem',

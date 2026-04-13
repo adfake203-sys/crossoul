@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { HapticManager } from '../../lib/HapticManager';
 import './Folder.css';
 
 const darkenColor = (hex: string, percent: number) => {
@@ -43,6 +44,7 @@ const Folder: React.FC<FolderProps> = ({ color = '#5227FF', size = 1, items = []
   const paper2 = darkenColor('#ffffff', 0.05);
 
   const handleFolderClick = () => {
+    HapticManager.selection();
     setOpen(prev => !prev);
     if (open) {
       setPaperOffsets(Array.from({ length: maxItems }, () => ({ x: 0, y: 0 })));
@@ -51,6 +53,7 @@ const Folder: React.FC<FolderProps> = ({ color = '#5227FF', size = 1, items = []
 
   const handlePaperClick = (e: React.MouseEvent, index: number) => {
     e.stopPropagation();
+    HapticManager.selection();
     if (!open) {
         setOpen(true);
         return;

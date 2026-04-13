@@ -4,6 +4,8 @@ import { X, Sparkles, Send, Loader2 } from 'lucide-react';
 import { db } from '../../lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
+import { HapticManager } from '../../lib/HapticManager';
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -30,8 +32,7 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
       });
 
       setIsSubmitted(true);
-      // Optional: Long Success Haptic
-      if ('vibrate' in navigator) navigator.vibrate([100, 50, 200]);
+      HapticManager.notification();
 
       setTimeout(() => {
         setIsSubmitted(false);

@@ -7,6 +7,26 @@ let pulseInterval: any = null;
 
 export const HapticManager = {
   /**
+   * Triggers an ultra-short 'impact' vibration (15ms)
+   * Good for dragging or subtle movement
+   */
+  impact: () => {
+    if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate(15);
+    }
+  },
+
+  /**
+   * Triggers a 'selection' click vibration (30ms)
+   * Perfect for button taps and UI toggles
+   */
+  selection: () => {
+    if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate(30);
+    }
+  },
+
+  /**
    * Triggers a light 'pop' vibration (50ms)
    */
   light: () => {
@@ -25,12 +45,21 @@ export const HapticManager = {
   },
 
   /**
+   * Triggers a 'notification' double pulse 
+   * Good for completions and match success
+   */
+  notification: () => {
+    if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+      navigator.vibrate([40, 50, 40]);
+    }
+  },
+
+  /**
    * Starts a repeated pulsing vibration (for holding)
    */
   startPulse: () => {
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {
       if (pulseInterval) return;
-      // Pulse every 150ms: 70ms on, 80ms off
       pulseInterval = setInterval(() => {
         navigator.vibrate(70);
       }, 150);
@@ -48,7 +77,7 @@ export const HapticManager = {
   },
 
   /**
-   * Triggers a complex pattern (e.g. for triple tap or error)
+   * Triggers a complex pattern
    */
   pattern: (p: number[]) => {
     if (typeof window !== 'undefined' && 'vibrate' in navigator) {

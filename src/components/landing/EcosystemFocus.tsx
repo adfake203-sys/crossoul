@@ -255,6 +255,7 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
     const coords = getRelativeCoords(e.clientX, e.clientY);
     if (!coords) return;
     setPointerPos(coords);
+    HapticManager.impact(); // Subtle movement feedback
 
     // Check distance against ALL unconnected nodes
     for (const node of activeNodes) {
