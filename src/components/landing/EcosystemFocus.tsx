@@ -219,12 +219,8 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
 
   const startDrag = (e: React.PointerEvent) => {
     if (isCompleted || errorModal.isOpen) return;
-    
-    // CAPTURE POINTER: This is the key fix for the "holding" bug.
-    // It prevents the browser from cancelling the pointer (due to 1s delay or scroll)
-    e.currentTarget.setPointerCapture(e.pointerId);
 
-    // Must start from the exact next node (usually Idea if 0, but since reset drops to 0, they always start at Idea)
+    // Must start from the exact next node
     const coords = getRelativeCoords(e.clientX, e.clientY);
     if (!coords) return;
 
@@ -235,6 +231,10 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
     const distance = Math.hypot(dx, dy);
 
     if (distance < 10) { // 10% radius snap
+      // ONLY capture pointer if we are actually starting a drag
+      // This allows normal scrolling when touching empty space on mobile
+      e.currentTarget.setPointerCapture(e.pointerId);
+      
       setIsDragging(true);
       setConnectedCount(connectedCount + 1);
       setPointerPos({ x: targetNode.x, y: targetNode.y });
@@ -352,7 +352,7 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
             borderRadius: '32px',
             border: '1px solid rgba(99, 102, 241, 0.1)',
             backdropFilter: 'blur(2px)',
-            touchAction: 'none' // Prevent scrolling when drawing pattern
+            touchAction: isDragging ? 'none' : 'auto' // Only block scroll when actively playing
           }}
         >
           {/* Background Grid */}
