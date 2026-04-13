@@ -217,36 +217,30 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
     return { x, y };
   };
 
-  const startDrag = (e: React.PointerEvent) => {
+  const startDrag = (e: React.PointerEvent, index: number) => {
     if (isCompleted || errorModal.isOpen) return;
-
-    // Must start from the exact next node
-    const coords = getRelativeCoords(e.clientX, e.clientY);
-    if (!coords) return;
-
-    // Check if we started near the REQUIRED next node
-    const targetNode = activeNodes[connectedCount];
-    const dx = coords.x - targetNode.x;
-    const dy = coords.y - targetNode.y;
-    const distance = Math.hypot(dx, dy);
-
-    if (distance < 10) { // 10% radius snap
-      // ONLY capture pointer if we are actually starting a drag
-      // This allows normal scrolling when touching empty space on mobile
-      e.currentTarget.setPointerCapture(e.pointerId);
-      
-      setIsDragging(true);
-      setConnectedCount(connectedCount + 1);
-      setPointerPos({ x: targetNode.x, y: targetNode.y });
-      HapticManager.light();
-    } else {
-      // If they click somewhere else and they previously had progress, reset it.
-      if (connectedCount > 0) {
-        setConnectedCount(0);
-        setPointerPos(null);
-        HapticManager.light();
-      }
+    
+    // Check if we are starting from the REQUIRED next node
+    if (index !== connectedCount) {
+        // If they click a different node than the next one, reset if they had progress
+        if (connectedCount > 0) {
+            setConnectedCount(0);
+            setPointerPos(null);
+            HapticManager.light();
+        }
+        return;
     }
+
+    // LOCK POINTER TO CONTAINER: This ensures the drag keeps working even if finger leaves the dot
+    if (containerRef.current) {
+        containerRef.current.setPointerCapture(e.pointerId);
+    }
+
+    setIsDragging(true);
+    setConnectedCount(connectedCount + 1);
+    const targetNode = activeNodes[index];
+    setPointerPos({ x: targetNode.x, y: targetNode.y });
+    HapticManager.light();
   };
 
   const trackDrag = (e: React.PointerEvent) => {
@@ -337,7 +331,6 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
         <div 
           ref={containerRef}
           className="eco-map" 
-          onPointerDown={startDrag}
           onPointerMove={trackDrag}
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
@@ -352,7 +345,7 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
             borderRadius: '32px',
             border: '1px solid rgba(99, 102, 241, 0.1)',
             backdropFilter: 'blur(2px)',
-            touchAction: isDragging ? 'none' : 'auto' // Only block scroll when actively playing
+            touchAction: 'auto' // Allow scrolling on the background
           }}
         >
           {/* Background Grid */}
@@ -408,6 +401,7 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
             return (
               <motion.div
                 key={node.id}
+                onPointerDown={(e) => startDrag(e, node.id)}
                 animate={{
                     scale: isReached ? 1.2 : 1, // Increased scale mask for a sturdy visual lock
                     boxShadow: isReached ? '0 0 30px rgba(99,102,241,0.6)' : 'none',
@@ -420,7 +414,8 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
                   transform: 'translate(-50%, -50%)',
                   cursor: isCompleted ? 'default' : 'pointer',
                   zIndex: 30, // Elevated to ensure it perfectly masks the SVG lines beneath
-                  pointerEvents: 'none'
+                  pointerEvents: isCompleted ? 'none' : 'auto',
+                  touchAction: 'none' // DISBALE SCROLL ONLY ON NODES
                 }}
               >
                 <div style={{
