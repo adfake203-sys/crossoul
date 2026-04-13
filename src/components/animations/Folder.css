@@ -1,0 +1,182 @@
+:root {
+  --folder-color: #2e313d;      /* Premium Dark Charcoal Blue */
+  --folder-back-color: #1e2028; /* Deeper shade for internal depth */
+  --paper-1: #f8f9fa;
+  --paper-2: #edf2f7;
+  --paper-3: #ffffff;
+  --magnet-x: 0px;
+  --magnet-y: 0px;
+}
+
+.folder {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+}
+
+/* Subtle Hover Lift */
+/* Subtle Hover Lift */
+@media (hover: hover) {
+  .folder:not(.open):hover {
+    transform: translateY(-12px);
+  }
+
+  .folder:not(.open):hover .paper {
+    transform: translate(-50%, -2%);
+  }
+
+  .folder:not(.open):hover .folder__front {
+    transform: skew(12deg) scaleY(0.6); /* Refined single flap tilt */
+  }
+
+  /* SYNC: Move title with flap on hover */
+  .folder:not(.open):hover .folder-title {
+    transform: translateY(4px) skew(12deg) scaleY(1.4); 
+    opacity: 1;
+  }
+}
+
+.folder.open {
+  transform: translateY(-8px);
+}
+
+/* Base state for papers when folder is closed */
+.folder:not(.open) .paper {
+  transform: translate(-50%, 2%);
+}
+
+.folder.open .folder__front {
+  transform: skew(12deg) scaleY(0.6);
+}
+
+/* SYNC: Fade out title when fully open */
+.folder.open .folder-title {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.folder__back {
+  position: relative;
+  width: 120px;
+  height: 90px;
+  background: var(--folder-back-color);
+  border-radius: 0px 12px 12px 12px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+}
+
+.folder__back::after {
+  position: absolute;
+  z-index: 0;
+  bottom: 98%;
+  left: 0;
+  content: '';
+  width: 35px;
+  height: 12px;
+  background: var(--folder-back-color);
+  border-radius: 6px 6px 0 0;
+}
+
+.paper {
+  position: absolute;
+  z-index: 2;
+  bottom: 8px;
+  left: 50%;
+  width: 65%;
+  height: 60%;
+  background: var(--paper-1);
+  border-radius: 8px;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  flex-direction: column;
+  perspective: 1000px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.paper:nth-child(2) {
+  background: var(--paper-2);
+  width: 70%; 
+  height: 55%;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.paper.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.card-front {
+  z-index: 2;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+.folder-title {
+  width: 80%;
+  text-align: center;
+  color: #fff;
+  font-weight: 900;
+  font-size: 8px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  line-height: 1.2;
+  opacity: 0.9;
+  transition: all 0.4s ease;
+  z-index: 15;
+  pointer-events: none;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.folder__front-container {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Ensure the front flap has a rich premium gradient */
+.folder__front {
+  position: absolute;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  background: var(--folder-color);
+  background: linear-gradient(135deg, var(--folder-color) 0%, #1a1c23 100%);
+  border-radius: 6px 12px 12px 12px;
+  transform-origin: bottom;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
