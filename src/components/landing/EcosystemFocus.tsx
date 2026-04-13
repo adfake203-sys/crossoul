@@ -192,7 +192,6 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
   
   // Drag Pattern State
   const [isDragging, setIsDragging] = useState(false);
-  const [holdTime, setHoldTime] = useState(0);
   const [pointerPos, setPointerPos] = useState<{ x: number, y: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -206,7 +205,6 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
     // Total reset for early lift or mistake
     setConnectedCount(0); 
     setIsDragging(false);
-    setHoldTime(0);
     HapticManager.stopResonance();
     setPointerPos(null);
     setActiveNodes(generateRandomNodes());
@@ -240,7 +238,6 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
     }
 
     setIsDragging(true);
-    setHoldTime(0);
     setConnectedCount(connectedCount + 1);
     const targetNode = activeNodes[index];
     setPointerPos({ x: targetNode.x, y: targetNode.y });
@@ -249,20 +246,19 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
   };
 
   useEffect(() => {
-    let interval: any;
+    let interval: any = null;
+    let localHoldTime = 0;
+    
     if (isDragging && !isCompleted) {
         interval = setInterval(() => {
-            setHoldTime(prev => {
-                const next = prev + 0.05;
-                HapticManager.startResonance(Math.min(1, next / 2)); // Max intensity after 2 seconds
-                return next;
-            });
+            localHoldTime += 0.05;
+            HapticManager.startResonance(Math.min(1, localHoldTime / 2)); 
         }, 50);
     } else {
         HapticManager.stopResonance();
     }
     return () => {
-        clearInterval(interval);
+        if (interval) clearInterval(interval);
         HapticManager.stopResonance();
     };
   }, [isDragging, isCompleted]);
@@ -295,7 +291,6 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
             // FULLY COMPLETE
             setIsCompleted(true);
             setIsDragging(false);
-            setHoldTime(0);
             setPointerPos(null);
             HapticManager.success();
             HapticManager.stopResonance();
@@ -316,7 +311,6 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
       // Released finger early -> Drop the pattern!
       setConnectedCount(0);
       setIsDragging(false);
-      setHoldTime(0);
       setPointerPos(null);
       HapticManager.stopResonance();
       HapticManager.notification(); // smoother disappointed feel

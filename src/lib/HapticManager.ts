@@ -1,9 +1,3 @@
-/**
- * HapticManager Utility
- * Handles cross-browser vibration feedback for mobile devices.
- */
-
-let pulseInterval: any = null;
 let resonanceInterval: any = null;
 
 export const HapticManager = {
