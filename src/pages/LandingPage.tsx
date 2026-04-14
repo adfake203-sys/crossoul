@@ -108,13 +108,12 @@ export default function LandingPage({ onShowAuth }: Props) {
               <CirclePhilosophy />
               <CircleGallery />
               <CircleOutcome />
-              <FoundersSection />
             </motion.div>
           )}
         </AnimatePresence>
       </main>
 
-      <ModernFooter onJoin={onShowAuth} />
+      <ModernFooter onJoin={onShowAuth} mode={viewMode} />
     </div>
   )
 }

@@ -103,8 +103,7 @@ export default function OutcomePerspective({ outcomes }: Props) {
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center',
-        userSelect: 'none',
-        touchAction: 'none'
+        userSelect: 'none'
       }}
     >
       {/* Cinematic Blur Backdrop */}
@@ -144,7 +143,8 @@ export default function OutcomePerspective({ outcomes }: Props) {
           cursor: 'pointer',
           zIndex: 1010, // Higher than cards
           boxShadow: isHolding ? '0 0 50px rgba(245, 158, 11, 0.4)' : 'none',
-          transition: 'background 0.3s ease, box-shadow 0.3s ease'
+          transition: 'background 0.3s ease, box-shadow 0.3s ease',
+          touchAction: 'none'
         }}
       >
         <span style={{ 

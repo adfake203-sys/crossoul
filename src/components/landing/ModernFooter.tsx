@@ -3,33 +3,35 @@ import { Instagram, Linkedin, Mail } from 'lucide-react';
 import ScrollFloat from '../animations/ScrollFloat';
 import { HapticManager } from '../../lib/HapticManager';
 
-export default function ModernFooter({ onJoin }: { onJoin?: () => void }) {
+export default function ModernFooter({ onJoin, mode }: { onJoin?: () => void, mode?: 'side-a' | 'side-b' }) {
   return (
     <footer className="modern-footer">
       <div style={{ marginBottom: '2.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
-        <motion.button 
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => {
-            HapticManager.success();
-            if (onJoin) onJoin();
-          }}
-          style={{
-            background: 'var(--accent-side-b)',
-            color: '#000',
-            border: 'none',
-            padding: '1.2rem 3rem',
-            borderRadius: '100px',
-            fontSize: '1rem',
-            fontWeight: 900,
-            letterSpacing: '1px',
-            cursor: 'pointer',
-            boxShadow: '0 15px 30px rgba(99, 102, 241, 0.3)',
-            marginBottom: '2.5rem'
-          }}
-        >
-          JOIN THE MOVEMENT
-        </motion.button>
+        {mode === 'side-a' && (
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              HapticManager.success();
+              if (onJoin) onJoin();
+            }}
+            style={{
+              background: 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)',
+              color: '#fff',
+              border: 'none',
+              padding: '1rem 2.5rem',
+              borderRadius: '100px',
+              fontSize: '1rem',
+              fontWeight: 900,
+              letterSpacing: '1px',
+              cursor: 'pointer',
+              boxShadow: '0 15px 30px rgba(99, 102, 241, 0.3)',
+              marginBottom: '2.5rem'
+            }}
+          >
+            JOIN THE MOVEMENT
+          </motion.button>
+        )}
         <ScrollFloat className="footer-brand" text="CROSSOUL" />
         <p style={{ color: '#52525b', fontSize: '1rem', fontWeight: 600, marginTop: '0.8rem', letterSpacing: '0.5px' }}>Connect. Meet. Grow.</p>
       </div>
