@@ -18,7 +18,7 @@ const founders: FounderData[] = [
     name: "Kishan Kasula",
     role: "CEO & Founder",
     type: "Founder",
-    photoSrc: "/kishan.jpg",
+    photoSrc: "/ceo.jpeg",
     linkedIn: "https://www.linkedin.com/in/kishankasula?utm_source=share_via&utm_content=profile&utm_medium=member_android",
     bioPoints: ["Founder of CROSSOUL", "Visionary behind the Ecosystem"]
   },
@@ -26,7 +26,7 @@ const founders: FounderData[] = [
     name: "Aditya Phanidar Vungarala",
     role: "CTO & Co-Founder",
     type: "Co-Founder",
-    photoSrc: "/aditya.jpg",
+    photoSrc: "/cto.jpeg",
     linkedIn: "https://www.linkedin.com/in/aditya-vungarala-813163291?utm_source=share_via&utm_content=profile&utm_medium=member_android",
     bioPoints: ["Co-Founder of CROSSOUL", "Head of Engineering & Tech Architecture"]
   }
@@ -34,7 +34,7 @@ const founders: FounderData[] = [
 
 const LOGO_SRC = "/logo-removebg-preview.png";
 
-export default function FoundersSection() {
+export default function FoundersSection({ onShowAuth }: { onShowAuth?: () => void }) {
   const [isMobile, setIsMobile] = useState(false);
   const [selectedFounder, setSelectedFounder] = useState<FounderData | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -64,7 +64,7 @@ export default function FoundersSection() {
   ));
 
   return (
-    <section className="founders-section" style={{ padding: isMobile ? '6rem 1rem' : '10rem 2rem', background: 'transparent', overflow: 'hidden' }}>
+    <section className="founders-section" style={{ padding: isMobile ? '3rem 1rem' : '6rem 2rem', background: 'transparent', overflow: 'hidden', color: 'inherit' }}>
       <div className="container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
         
         {/* Founders Quote Header */}
@@ -79,14 +79,14 @@ export default function FoundersSection() {
             fontFamily: 'var(--font-accent)',
             fontSize: 'clamp(1.5rem, 5vw, 3rem)', 
             fontWeight: 400, 
-            color: '#fff', 
+            color: 'var(--text-primary)', 
             lineHeight: 1.2, 
             maxWidth: '1000px', 
             margin: '0 auto',
             letterSpacing: '0px',
             opacity: 0.95
           }}>
-            "We built this because <span style={{ color: '#6366f1', fontFamily: 'var(--font-accent)', fontStyle: 'italic' }}>we were these students.</span> Sitting in a tier-2 city, with things to say and nowhere to say them. Crossoul is the platform we needed and nobody built. <span style={{ color: '#6366f1', fontFamily: 'var(--font-accent)', fontStyle: 'italic' }}>So we did.</span>"
+            "We built this because <span style={{ color: 'var(--accent-side-b, #6366f1)', fontFamily: 'var(--font-accent)', fontStyle: 'italic' }}>we were these students.</span> Sitting in a tier-2 city, with things to say and nowhere to say them. Crossoul is the platform we needed and nobody built. <span style={{ color: 'var(--accent-side-b, #6366f1)', fontFamily: 'var(--font-accent)', fontStyle: 'italic' }}>So we did.</span>"
           </h2>
         </motion.div>
 
@@ -126,12 +126,13 @@ export default function FoundersSection() {
           >
             <p style={{ 
               fontFamily: 'var(--font-body)',
-              color: '#71717a', 
+              color: 'var(--text-dark, #71717a)', 
               fontSize: isMobile ? '0.85rem' : '1rem', 
               lineHeight: 1.6, 
               letterSpacing: '0.2px',
               fontStyle: 'italic',
-              margin: 0
+              margin: 0,
+              opacity: 0.8
             }}>
               "Meet the visionaries who built CROSSOUL. Click the folder to reveal cards, then click a card to see the profile."
             </p>

@@ -9,17 +9,22 @@ export default function JourneySection() {
     <motion.div 
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, margin: "-100px" }}
+      viewport={{ once: true, amount: 0.3 }}
       variants={{
         hidden: { opacity: 0 },
-        show: { opacity: 1, transition: { duration: 0.8 } }
+        show: { 
+          opacity: 1, 
+          transition: { 
+            staggerChildren: 0.2
+          } 
+        }
       }}
       style={{ textAlign: 'center', marginBottom: '4rem', padding: '0 1rem' }}
     >
       <h2 style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 900, color: '#fff', marginBottom: '1rem' }}>
         THE 3-STEP FLOW.
       </h2>
-      <p style={{ color: '#71717a', fontSize: '1.1rem', maxWidth: '600px', margin: '0 auto' }}>
+      <p style={{ color: '#71717a', fontSize: '1.2rem', maxWidth: '600px', margin: '1rem auto' }}>
         From raw narrative to real-world resonance. This is how we take your thoughts offline.
       </p>
 

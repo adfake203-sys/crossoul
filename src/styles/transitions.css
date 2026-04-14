@@ -1,0 +1,35 @@
+.portal-transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.portal-circle {
+  position: absolute;
+  background: #09090b; /* Base theme color */
+  border-radius: 50%;
+  transform: scale(0);
+}
+
+/* Side-specific theme overrides for Side B */
+.side-b-theme {
+  --bg-color: #0d0d0d;
+  --accent-color: #f59e0b; /* Amber/Soulful accent */
+  --text-primary: #fff;
+  --text-secondary: #a1a1aa;
+}
+
+.side-b-wrapper {
+  background-color: var(--bg-color);
+  min-height: 100vh;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+}
+
+.side-b-accent-font {
+  font-family: var(--font-accent);
+}

@@ -97,10 +97,10 @@ const ComedyErrorModal = ({ isOpen, onClose, message, memeSrc }: { isOpen: boole
         }}
       >
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          style={{ position: 'absolute', inset: 0, background: 'rgba(9, 9, 11, 0.9)', backdropFilter: 'blur(8px)', borderRadius: '32px' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            style={{ position: 'absolute', inset: 0, background: 'rgba(9, 9, 11, 0.9)', backdropFilter: 'blur(8px)', borderRadius: '32px' }}
         />
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
@@ -148,6 +148,14 @@ const ComedyErrorModal = ({ isOpen, onClose, message, memeSrc }: { isOpen: boole
 // --- MVP Content & Randomization ---
 const MVP_LABELS = ['IDEA', 'PLANNING', 'DISCUSSION', 'SAME VIBE', 'BUILD TOGETHER'];
 
+const comedyErrors = [
+  "You just tried to build a unicorn without a horn. Let's try that again.",
+  "Skipping steps? That's how we end up with a 'Coming Soon' page for 3 years.",
+  "Woah! You're building a rocket with no fuel. Planning is key, buddy.",
+  "Wait, you haven't even talked to your users yet. Discussion first!",
+  "Trying to build together without a vibe check? Error 404: Synergy Not Found.",
+];
+
 const generateRandomNodes = () => {
   // Define 9 grid zones (3x3) to ensure spread
   const zones = [
@@ -174,14 +182,6 @@ const generateRandomNodes = () => {
     };
   });
 };
-
-const comedyErrors = [
-  "You just tried to build a unicorn without a horn. Let's try that again.",
-  "Skipping steps? That's how we end up with a 'Coming Soon' page for 3 years.",
-  "Woah! You're building a rocket with no fuel. Planning is key, buddy.",
-  "Wait, you haven't even talked to your users yet. Discussion first!",
-  "Trying to build together without a vibe check? Error 404: Synergy Not Found.",
-];
 
 export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
   const [connectedCount, setConnectedCount] = useState(0);
@@ -221,8 +221,14 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
   const startDrag = (e: React.PointerEvent, index: number) => {
     if (isCompleted || errorModal.isOpen) return;
     
-    // Check if we are starting from the REQUIRED next node
+    // STRICT GAME LOGIC: Must start from IDEA (index 0)
     if (index !== connectedCount) {
+        // If they click anything but IDEA at the start, TRIGER ERROR!
+        if (connectedCount === 0) {
+            triggerError();
+            return;
+        }
+
         // If they click a different node than the next one, reset if they had progress
         if (connectedCount > 0) {
             setConnectedCount(0);
@@ -342,12 +348,12 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
             lineHeight: 1,
             letterSpacing: '-2px'
           }}>
-            {isCompleted ? 'WE ARE INFINITE' : 'BUILD THE MOVEMENT.'}
+            {isCompleted ? 'WE ARE INFINITE' : 'MISSION: BUILD YOUR MVP'}
           </h2>
           {!isCompleted && (
-            <p style={{ color: '#a1a1aa', marginTop: '1.2rem', fontSize: '1rem', maxWidth: '600px', margin: '1rem auto', lineHeight: 1.5 }}>
-              A movement isn't built in a day, and it's never a straight line. <br/> 
-              <span style={{ color: '#818cf8', fontWeight: 700 }}>Discover the Path:</span> Swipe through the stages in the order a real-world MVP is born.
+            <p style={{ color: '#a1a1aa', marginTop: '1.2rem', fontSize: '1.1rem', maxWidth: '600px', margin: '1rem auto', lineHeight: 1.5 }}>
+              A movement isn't built in a day. <br/> 
+              <span style={{ color: '#818cf8', fontWeight: 700 }}>THE CHALLENGE:</span> Drag from the <span style={{ color: '#fff' }}>IDEA</span> node through the stages in order.
             </p>
           )}
         </div>
@@ -454,13 +460,37 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}>
+                  {/* START MISSION HINT */}
+                  {node.id === 0 && connectedCount === 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      style={{
+                        position: 'absolute',
+                        top: '-40px',
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        background: '#6366f1',
+                        color: '#fff',
+                        padding: '4px 10px',
+                        borderRadius: '6px',
+                        fontSize: '0.6rem',
+                        fontWeight: 900,
+                        whiteSpace: 'nowrap'
+                      }}
+                    >
+                      START MISSION
+                      <div style={{ position: 'absolute', bottom: '-4px', left: '50%', transform: 'translateX(-50%)', borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #6366f1' }} />
+                    </motion.div>
+                  )}
+
                   {/* Subtle Inner Glow Pulse to visually anchor the exact center */}
                   <AnimatePresence>
-                    {isReached && (
+                    {(isReached || (node.id === 0 && connectedCount === 0)) && (
                       <motion.div
                         initial={{ scale: 0, opacity: 1 }}
-                        animate={{ scale: 1.8, opacity: 0 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "easeOut" }}
+                        animate={{ scale: node.id === 0 && connectedCount === 0 ? [1, 2, 1] : 1.8, opacity: node.id === 0 && connectedCount === 0 ? [0.8, 0.4, 0.8] : 0 }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
                         style={{
                           position: 'absolute',
                           width: '12px',

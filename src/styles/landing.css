@@ -1,12 +1,18 @@
+:root {
+  --bg-primary: #09090b;
+  --text-primary: #fafafa;
+  --accent-side-b: #f59e0b;
+  --text-muted: #71717a;
+}
+
 .landing-page-wrapper {
   min-height: 100vh;
-  background: #09090b; /* Zinc 950 - Premium Dark */
-  color: #fafafa;
+  background: var(--bg-primary);
+  color: var(--text-primary);
   overflow-x: hidden;
   position: relative;
-  font-family: var(--font-body);
-  -webkit-tap-highlight-color: transparent;
   user-select: none;
+  transition: background 0.5s ease;
 }
 
 .mesh-bg {
@@ -284,8 +290,14 @@
   transition: color 0.2s;
 }
 
-.footer-link:hover {
-  color: #e4e4e7;
+.side-b-theme .footer-brand {
+  background: linear-gradient(to right, var(--accent-side-b), #d97706);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.side-b-theme .footer-link:hover {
+  color: var(--accent-side-b);
 }
 
 .legal-text {
@@ -293,4 +305,19 @@
   font-size: 0.9rem;
   font-weight: 500;
   text-align: center;
+}
+
+
+/* Side B Theme Specifics - Luxe Dark */
+.side-b-theme {
+  --bg-primary: #09090b;
+  --text-primary: #fafafa;
+}
+
+.side-b-theme .mesh-bg {
+  opacity: 0.15;
+  filter: blur(80px);
+  background: 
+    radial-gradient(circle at 15% 50%, rgba(245, 158, 11, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(245, 158, 11, 0.05) 0%, transparent 40%);
 }
