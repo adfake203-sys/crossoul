@@ -18,7 +18,7 @@ const founders: FounderData[] = [
     name: "Kishan Kasula",
     role: "CEO & Founder",
     type: "Founder",
-    photoSrc: "/ceo.jpeg",
+    photoSrc: "/ceo.jpg",
     linkedIn: "https://www.linkedin.com/in/kishankasula?utm_source=share_via&utm_content=profile&utm_medium=member_android",
     bioPoints: ["Founder of CROSSOUL", "Visionary behind the Ecosystem"]
   },
@@ -26,7 +26,7 @@ const founders: FounderData[] = [
     name: "Aditya Phanidar Vungarala",
     role: "CTO & Co-Founder",
     type: "Co-Founder",
-    photoSrc: "/cto.jpeg",
+    photoSrc: "/cto.jpg",
     linkedIn: "https://www.linkedin.com/in/aditya-vungarala-813163291?utm_source=share_via&utm_content=profile&utm_medium=member_android",
     bioPoints: ["Co-Founder of CROSSOUL", "Head of Engineering & Tech Architecture"]
   }

@@ -70,7 +70,8 @@ export default function LandingPage({ onShowAuth }: Props) {
             transition={{ duration: 1.2, ease: [0.6, 0.05, 0.1, 0.99] }}
             style={{ 
               background: viewMode === 'side-a' ? '#f59e0b' : '#6366f1',
-              zIndex: 99999
+              zIndex: 99999,
+              userSelect: 'none'
             }}
           />
         )}

@@ -96,7 +96,7 @@ export default function OutcomePerspective({ outcomes }: Props) {
         alignItems: 'center', 
         justifyContent: 'center',
         userSelect: 'none',
-        touchAction: 'none'
+        touchAction: isHolding ? 'none' : 'pan-y'
       }}
     >
       {/* Cinematic Blur Backdrop */}

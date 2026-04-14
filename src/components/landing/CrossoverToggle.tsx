@@ -44,6 +44,7 @@ export default function CrossoverToggle({ mode, onToggle, isScrolled }: Props) {
         borderRadius: '100px',
         border: '1px solid rgba(255, 255, 255, 0.1)',
         boxShadow: isScrolled ? '0 20px 50px rgba(0,0,0,0.5)' : '0 10px 30px rgba(0,0,0,0.2)',
+        userSelect: 'none'
       }}
     >
       <motion.button
