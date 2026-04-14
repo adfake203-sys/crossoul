@@ -15,10 +15,10 @@ export default function ModernFooter({ onJoin }: { onJoin?: () => void }) {
             if (onJoin) onJoin();
           }}
           style={{
-            background: 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)',
-            color: '#fff',
+            background: 'var(--accent-side-b)',
+            color: '#000',
             border: 'none',
-            padding: '1rem 2.5rem',
+            padding: '1.2rem 3rem',
             borderRadius: '100px',
             fontSize: '1rem',
             fontWeight: 900,

@@ -117,9 +117,9 @@ export default function FoundersSection() {
           }}>
             <Folder 
               size={isMobile ? 2.2 : 3.5} 
-              color="#6366f1" 
+              color="#f59e0b" 
               items={founderItems}
-              title="The Pulse Behind the Movement"
+              title="THE COLLECTIVE"
               onCardClick={handleCardClick}
               className="founders-folder"
             />
