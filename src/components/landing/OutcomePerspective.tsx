@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { HapticManager } from '../../lib/HapticManager';
@@ -76,7 +76,7 @@ export default function OutcomePerspective({ outcomes }: Props) {
     window.removeEventListener('pointerup', handlePointerUp);
   }, [handlePointerMove, outcomes]);
 
-  const handlePointerDown = (e: React.PointerEvent) => {
+  const handlePointerDown = () => {
     if (selectedOutcome) return;
     HapticManager.impact();
     setIsHolding(true);

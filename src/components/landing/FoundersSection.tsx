@@ -34,7 +34,7 @@ const founders: FounderData[] = [
 
 const LOGO_SRC = "/logo-removebg-preview.png";
 
-export default function FoundersSection({ onShowAuth }: { onShowAuth?: () => void }) {
+export default function FoundersSection() {
   const [isMobile, setIsMobile] = useState(false);
   const [selectedFounder, setSelectedFounder] = useState<FounderData | null>(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);

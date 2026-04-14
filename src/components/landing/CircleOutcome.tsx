@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { FileText, Users, Lightbulb, Rocket } from 'lucide-react';
-import { HapticManager } from '../../lib/HapticManager';
 import OutcomePerspective from './OutcomePerspective';
 
 const outcomes = [
@@ -30,27 +29,7 @@ const outcomes = [
   }
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.2
-    }
-  }
-};
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.8,
-      ease: [0.215, 0.61, 0.355, 1]
-    }
-  }
-};
 
 export default function CircleOutcome() {
   return (

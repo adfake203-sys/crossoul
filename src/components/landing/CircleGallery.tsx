@@ -1,21 +1,7 @@
 import { motion } from 'framer-motion';
 import DomeGallery from '../animations/DomeGallery';
 
-const images = [
-  {
-    src: "/circle_session.png",
-    caption: "The Collective Brain — A typical circle session in progress."
-  },
-  // Placeholders for more images
-  {
-    src: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
-    caption: "Refining visions, one thread at a time."
-  },
-  {
-    src: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80",
-    caption: "No judges, only resonance."
-  }
-];
+
 
 export default function CircleGallery() {
   return (

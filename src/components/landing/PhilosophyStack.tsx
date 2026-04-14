@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { HapticManager } from '../../lib/HapticManager';
 
@@ -15,7 +15,7 @@ interface Props {
 export default function PhilosophyStack({ points }: Props) {
   const [stack, setStack] = useState(points);
 
-  const handleDragEnd = (event: any, info: any) => {
+  const handleDragEnd = (_event: any, info: any) => {
     // If swiped far enough
     if (Math.abs(info.offset.x) > 100 || Math.abs(info.offset.y) > 100) {
       HapticManager.notification();
