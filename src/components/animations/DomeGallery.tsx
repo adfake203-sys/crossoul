@@ -463,6 +463,28 @@ export default function DomeGallery({
     };
   }, [enlargeTransitionMs, unlockScroll]);
 
+  // Global popup state for toggle visibility
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.type === 'attributes' && mutation.attributeName === 'data-enlarging') {
+          const isEnlarging = root.getAttribute('data-enlarging') === 'true';
+          if (isEnlarging) document.body.classList.add('popup-active');
+          else document.body.classList.remove('popup-active');
+        }
+      });
+    });
+
+    observer.observe(root, { attributes: true });
+    return () => {
+      observer.disconnect();
+      document.body.classList.remove('popup-active');
+    };
+  }, []);
+
   const openItemFromElement = useCallback(
     (el: HTMLElement) => {
       if (openingRef.current) return;

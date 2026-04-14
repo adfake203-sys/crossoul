@@ -23,6 +23,14 @@ export default function OutcomePerspective({ outcomes }: Props) {
   const activeIndexRef = useRef<number | null>(null);
   const lastTickIndex = useRef<number | null>(null);
 
+  useEffect(() => {
+    if (selectedOutcome) {
+      document.body.classList.add('popup-active');
+    } else {
+      document.body.classList.remove('popup-active');
+    }
+  }, [selectedOutcome]);
+
   // Radial selection logic
   const handlePointerMove = useCallback((e: PointerEvent) => {
     if (!containerRef.current) return;

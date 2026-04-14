@@ -40,6 +40,14 @@ export default function FoundersSection() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   useEffect(() => {
+    if (isPopupOpen) {
+      document.body.classList.add('popup-active');
+    } else {
+      document.body.classList.remove('popup-active');
+    }
+  }, [isPopupOpen]);
+
+  useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
