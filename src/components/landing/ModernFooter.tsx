@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { Instagram, Linkedin, Mail } from 'lucide-react';
 import ScrollFloat from '../animations/ScrollFloat';
 import { HapticManager } from '../../lib/HapticManager';
@@ -54,6 +55,16 @@ export default function ModernFooter({ onJoin, mode }: { onJoin?: () => void, mo
         </a>
       </div>
       
+      <div className="legal-text" style={{ marginBottom: '0.4rem' }}>
+        Built by{' '}
+        <Link to="/kishan-kasula" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: '2px', opacity: 0.7 }}>
+          Kishan Kasula
+        </Link>
+        {' '}&amp;{' '}
+        <Link to="/aditya-phanidar-vungarala" style={{ color: 'inherit', textDecoration: 'underline', textUnderlineOffset: '2px', opacity: 0.7 }}>
+          Aditya Phanidar Vungarala
+        </Link>
+      </div>
       <div className="legal-text">
         &copy; {new Date().getFullYear()} Crossoul Private Limited Company. All rights reserved.
       </div>
