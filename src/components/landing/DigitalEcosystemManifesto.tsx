@@ -73,7 +73,11 @@ function ProblemSection({ prob, idx }: { prob: any, idx: number }) {
                 alignItems: prob.align === 'center' ? 'center' : prob.align === 'left' ? 'flex-start' : 'flex-end',
                 textAlign: prob.align as any,
                 width: '100%',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                WebkitTouchCallout: 'none',
+                WebkitTapHighlightColor: 'transparent'
             }}
             onMouseDown={startHold}
             onMouseUp={endHold}

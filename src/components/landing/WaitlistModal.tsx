@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Sparkles, Send, Loader2 } from 'lucide-react';
 import { db } from '../../lib/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, getCountFromServer } from 'firebase/firestore';
 
 import { HapticManager } from '../../lib/HapticManager';
 
@@ -19,6 +19,36 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [memberCount, setMemberCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('popup-active');
+    } else {
+      document.body.classList.remove('popup-active');
+    }
+    return () => document.body.classList.remove('popup-active');
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen && memberCount === null) {
+      const fetchCount = async () => {
+        try {
+          const snapshot = await getCountFromServer(collection(db, 'waitlist'));
+          setMemberCount(120 + snapshot.data().count + 1);
+        } catch (err) {
+          console.error("Failed fetching waitlist count", err);
+        }
+      };
+      fetchCount();
+    }
+  }, [isOpen, memberCount]);
+
+  const getOrdinal = (n: number) => {
+    const s = ["th", "st", "nd", "rd"];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +71,7 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
       });
 
       setIsSubmitted(true);
+      window.dispatchEvent(new CustomEvent('WAITLIST_JOINED'));
       HapticManager.notification();
 
       setTimeout(() => {
@@ -80,11 +111,11 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
               width: '100%',
               maxWidth: '500px',
               maxHeight: '90vh',
-              background: 'rgba(24, 24, 27, 0.9)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
+              background: 'rgba(24, 24, 27, 0.95)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               borderRadius: '32px',
               padding: '2.5rem',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+              boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)',
               overflowY: 'auto',
               scrollbarWidth: 'none',
               msOverflowStyle: 'none'
@@ -133,11 +164,29 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
                     color: '#a1a1aa', 
                     fontSize: '0.95rem', 
                     lineHeight: '1.4', 
-                    marginBottom: '1.8rem',
+                    marginBottom: '1rem',
                     letterSpacing: '-0.2px'
                 }}>
                   Experience a mindful world of resonance. Be the first to know when we launch the next phase.
                 </p>
+
+                {memberCount !== null && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    style={{
+                      marginBottom: '1.8rem',
+                      padding: '0.8rem 1rem',
+                      background: 'rgba(255, 255, 255, 0.04)',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: '12px',
+                    }}
+                  >
+                    <p style={{ margin: 0, color: '#e4e4e7', fontSize: '0.85rem', fontWeight: 500 }}>
+                      <strong style={{ color: '#fff', fontSize: '0.95rem' }}>{memberCount - 1}</strong> students already registered for early access. Be the <strong style={{ color: '#fff' }}>{getOrdinal(memberCount)}</strong>.
+                    </p>
+                  </motion.div>
+                )}
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>

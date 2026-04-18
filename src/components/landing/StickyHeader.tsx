@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HapticManager } from '../../lib/HapticManager';
+import { db } from '../../lib/firebase';
+import { collection, getCountFromServer } from 'firebase/firestore';
 
 interface Props {
   onJoin: () => void;
@@ -9,67 +11,86 @@ interface Props {
 
 export default function StickyHeader({ onJoin, brandText = "CROSSOUL" }: Props) {
   const [scrolled, setScrolled] = useState(false);
+  const [isGameActive, setIsGameActive] = useState(false);
+  const [memberCount, setMemberCount] = useState(121);
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 100);
     };
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    const handleGameEvent = ((e: CustomEvent) => {
+        setIsGameActive(!!e.detail);
+    }) as EventListener;
+    window.addEventListener('GAME_STATUS', handleGameEvent);
+
+    const handleWaitlistJoin = () => {
+        setMemberCount(prev => prev + 1);
+    };
+    window.addEventListener('WAITLIST_JOINED', handleWaitlistJoin);
+
+    const fetchCount = async () => {
+      try {
+        const coll = collection(db, 'waitlist');
+        const snapshot = await getCountFromServer(coll);
+        setMemberCount(120 + snapshot.data().count + 1);
+      } catch (err) {
+        console.error("Failed to fetch waitlist count:", err);
+      }
+    };
+    fetchCount();
+
+    return () => {
+        window.removeEventListener('scroll', handleScroll);
+        window.removeEventListener('GAME_STATUS', handleGameEvent);
+        window.removeEventListener('WAITLIST_JOINED', handleWaitlistJoin);
+    };
   }, []);
 
-  return (
-    <motion.header
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '72px',
-        zIndex: 1000,
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0 2rem',
-        background: scrolled ? 'var(--glass-bg)' : 'transparent',
-        backdropFilter: scrolled ? 'var(--glass-blur)' : 'none',
-        borderBottom: scrolled ? '1px solid var(--glass-border)' : 'none',
-        transition: 'background 0.4s ease, backdrop-filter 0.4s ease, border-bottom 0.4s ease',
-      }}
-    >
-      <div style={{ 
-        maxWidth: '1200px', 
-        width: '100%', 
-        margin: '0 auto', 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center' 
-      }}>
-        {/* Brand Logo / Text */}
-        <motion.div 
-          role="button"
-          style={{ 
-            fontSize: '1.2rem', 
-            fontWeight: 900, 
-            letterSpacing: '5px', 
-            color: '#fff',
-            cursor: 'pointer'
-          }}
-          whileHover={{ scale: 1.05 }}
-          onClick={() => window.scrollTo(0, 0)}
-        >
-          {brandText}
-        </motion.div>
+  // Helper for ordinals
+  const getOrdinal = (n: number) => {
+    const s = ["th", "st", "nd", "rd"];
+    const v = n % 100;
+    return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  };
 
-        {/* Global CTA */}
-        <AnimatePresence>
-          {scrolled && (
+  return (
+    <AnimatePresence>
+      {scrolled && !isGameActive && (
+        <motion.header
+          initial={{ y: -100, opacity: 0 }}
+          animate={{ y: 24, opacity: 1 }}
+          exit={{ y: -100, opacity: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            margin: '0 auto',
+            width: 'max-content',
+            maxWidth: 'calc(100% - 2rem)',
+            height: '60px',
+            zIndex: 1000,
+            display: 'flex',
+            alignItems: 'center',
+            padding: '0 0.5rem 0 1.5rem',
+            background: 'rgba(24, 24, 27, 0.6)',
+            backdropFilter: 'blur(24px)',
+            WebkitBackdropFilter: 'blur(24px)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            borderRadius: '100px',
+            boxShadow: '0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
+            <div style={{ color: '#e4e4e7', fontSize: '0.9rem', fontWeight: 500, letterSpacing: '0.2px' }}>
+              <span className="hide-on-mobile">Join </span>
+              <strong style={{ color: '#fff', fontWeight: 800 }}>{memberCount - 1}</strong> members<span className="hide-on-mobile"> registered</span>
+            </div>
+
             <motion.button
-              initial={{ opacity: 0, scale: 0.8, x: 20 }}
-              animate={{ opacity: 1, scale: 1, x: 0 }}
-              exit={{ opacity: 0, scale: 0.8, x: 20 }}
               className="glass-button-premium"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -78,20 +99,23 @@ export default function StickyHeader({ onJoin, brandText = "CROSSOUL" }: Props) 
                 onJoin();
               }}
               style={{
-                color: '#fff',
-                border: '1px solid rgba(255,255,255,0.15)',
-                padding: '0.6rem 1.8rem',
+                color: '#000',
+                background: '#ffffff',
+                border: 'none',
+                padding: '0.65rem 1.4rem',
                 borderRadius: '100px',
                 fontSize: '0.8rem',
-                fontWeight: 800,
-                letterSpacing: '1px'
+                fontWeight: 900,
+                letterSpacing: '0.5px',
+                cursor: 'pointer',
+                boxShadow: '0 4px 14px rgba(255,255,255,0.2)'
               }}
             >
-              JOIN THE CIRCLE
+              WAITLIST
             </motion.button>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.header>
+          </div>
+        </motion.header>
+      )}
+    </AnimatePresence>
   );
 }

@@ -249,3 +249,11 @@ button:active {
     scroll-snap-type: x mandatory;
   }
 }
+
+/* Global Popup Active States */
+body.popup-active .crossover-toggle-container {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(40px) scale(0.95) !important;
+  transition: opacity 0.3s ease, transform 0.3s ease !important;
+}

@@ -74,14 +74,35 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
   <style>
+    /* Uncloaked SEO Static Section Styling */
     #seo-content {
-      position: absolute;
-      left: -9999px;
-      top: auto;
-      width: 1px;
-      height: 1px;
-      overflow: hidden;
+      background: var(--bg-black, #000);
+      color: var(--text-secondary, rgba(255, 255, 255, 0.6));
+      padding: 6rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      font-family: var(--font-body, 'Inter', sans-serif);
+      line-height: 1.7;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
+    #seo-content h1, #seo-content h2, #seo-content h3 {
+      font-family: var(--font-heading, 'Outfit', sans-serif);
+      color: var(--text-primary, rgba(255, 255, 255, 0.94));
+      margin-bottom: 1rem;
+      font-weight: 700;
+    }
+    #seo-content h1 { font-size: 2.5rem; margin-bottom: 2rem; letter-spacing: -1px; }
+    #seo-content h2 { font-size: 1.8rem; margin-top: 3.5rem; letter-spacing: -0.5px; }
+    #seo-content h3 { font-size: 1.3rem; margin-top: 1rem; margin-bottom: 0.5rem; color: #fff;}
+    #seo-content p { margin-bottom: 1.5rem; font-size: 1.05rem; }
+    #seo-content a { color: #f59e0b; text-decoration: none; font-weight: 600; transition: color 0.2s; }
+    #seo-content a:hover { color: #d97706; }
+    #seo-content ol { padding-left: 1.5rem; margin-bottom: 2rem; font-size: 1.05rem; }
+    #seo-content li { margin-bottom: 0.8rem; }
+    .founder-profiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 3rem; margin-top: 2.5rem; }
+    .founder-profile { background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 24px; border: 1px solid rgba(255,255,255,0.05); }
+    .founder-profile img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 1.5rem; border: 2px solid rgba(255, 255, 255, 0.1); }
+    @media (max-width: 768px) { #seo-content { padding: 4rem 1.5rem; } }
   </style>
 </head>
 

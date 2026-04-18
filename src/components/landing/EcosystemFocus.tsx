@@ -252,6 +252,10 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
   };
 
   useEffect(() => {
+    window.dispatchEvent(new CustomEvent('GAME_STATUS', { detail: isDragging }));
+  }, [isDragging]);
+
+  useEffect(() => {
     let interval: any = null;
     let localHoldTime = 0;
     
