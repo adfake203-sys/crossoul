@@ -71,7 +71,7 @@ export default function OutcomePerspective({ outcomes }: Props) {
     }
   }, []);
 
-  const handlePointerUp = useCallback(() => {
+  function handlePointerUp() {
     if (activeIndexRef.current !== null) {
       HapticManager.success();
       setSelectedOutcome(outcomes[activeIndexRef.current]);
@@ -82,7 +82,7 @@ export default function OutcomePerspective({ outcomes }: Props) {
     lastTickIndex.current = null;
     window.removeEventListener('pointermove', handlePointerMove);
     window.removeEventListener('pointerup', handlePointerUp);
-  }, [handlePointerMove, outcomes]);
+  }
 
   const handlePointerDown = () => {
     if (selectedOutcome) return;

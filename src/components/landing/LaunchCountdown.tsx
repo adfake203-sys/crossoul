@@ -1,6 +1,22 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
+const CountdownUnit = ({ value, label }: { value: number, label: string }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '80px' }}>
+    <motion.div
+      key={value}
+      initial={{ y: 10, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      style={{ fontSize: 'clamp(2rem, 6vw, 4rem)', fontWeight: 900, color: '#fff', letterSpacing: '-2px' }}
+    >
+      {value.toString().padStart(2, '0')}
+    </motion.div>
+    <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent-side-a)', letterSpacing: '2px', textTransform: 'uppercase', opacity: 0.8 }}>
+      {label}
+    </div>
+  </div>
+);
+
 export default function LaunchCountdown() {
   // Target date: 6 months from now
   const [targetDate] = useState(() => {
@@ -30,21 +46,7 @@ export default function LaunchCountdown() {
     return () => clearInterval(timer);
   }, [targetDate]);
 
-  const CountdownUnit = ({ value, label }: { value: number, label: string }) => (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '80px' }}>
-      <motion.div
-        key={value}
-        initial={{ y: 10, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        style={{ fontSize: 'clamp(2rem, 6vw, 4rem)', fontWeight: 900, color: '#fff', letterSpacing: '-2px' }}
-      >
-        {value.toString().padStart(2, '0')}
-      </motion.div>
-      <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent-side-a)', letterSpacing: '2px', textTransform: 'uppercase', opacity: 0.8 }}>
-        {label}
-      </div>
-    </div>
-  );
+
 
   return (
     <section style={{ padding: '4rem 1rem 0', background: 'transparent', position: 'relative', overflow: 'hidden' }}>

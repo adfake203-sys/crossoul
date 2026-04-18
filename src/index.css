@@ -73,6 +73,8 @@
 html {
   scroll-behavior: smooth;
   background-color: var(--bg-black);
+  overflow-x: hidden;
+  width: 100%;
 }
 
 body {
@@ -80,6 +82,8 @@ body {
   color: var(--text-primary);
   background: var(--bg-black);
   line-height: 1.5;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 
@@ -228,6 +232,10 @@ button:active {
 
 /* Mobile Utilities */
 @media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+
   section {
     padding: 4rem 1.5rem !important;
   }
