@@ -21,7 +21,7 @@ export default function CrossoverToggle({ mode, onToggle, isScrolled }: Props) {
       className="crossover-toggle-container"
       initial={false}
       animate={{
-        top: isScrolled ? 'calc(100svh - 6rem)' : '0.75rem',
+        top: isScrolled ? 'calc(100svh - 4.5rem)' : '0.75rem',
         scale: isScrolled ? 1 : 1,
         background: isScrolled ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.05)',
       }}

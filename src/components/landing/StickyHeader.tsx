@@ -52,7 +52,7 @@ export default function StickyHeader({ onJoin }: Props) {
       {scrolled && !isGameActive && (
         <motion.header
           initial={{ y: -100, opacity: 0 }}
-          animate={{ y: 24, opacity: 1 }}
+          animate={{ y: 0, opacity: 1 }}
           exit={{ y: -100, opacity: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
           style={{
@@ -60,23 +60,20 @@ export default function StickyHeader({ onJoin }: Props) {
             top: 0,
             left: 0,
             right: 0,
-            margin: '0 auto',
-            width: 'max-content',
-            maxWidth: 'calc(100% - 2rem)',
+            width: '100%',
             height: '60px',
             zIndex: 1000,
             display: 'flex',
             alignItems: 'center',
-            padding: '0 0.5rem 0 1.5rem',
-            background: 'rgba(24, 24, 27, 0.6)',
+            padding: '0 1.5rem',
+            background: 'rgba(24, 24, 27, 0.85)',
             backdropFilter: 'blur(24px)',
             WebkitBackdropFilter: 'blur(24px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: '100px',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.2rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
             <div style={{ color: '#e4e4e7', fontSize: '0.9rem', fontWeight: 500, letterSpacing: '0.2px' }}>
               <span className="hide-on-mobile">Join </span>
               <strong style={{ color: '#fff', fontWeight: 800 }}>{memberCount - 1}</strong> members<span className="hide-on-mobile"> registered</span>
