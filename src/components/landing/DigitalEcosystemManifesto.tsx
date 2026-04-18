@@ -231,15 +231,15 @@ export default function DigitalEcosystemManifesto() {
                         Bridging the gap between a conversation on a phone and an experience in the real world.
                     </p>
                     
-                    <div style={{ marginTop: '5rem', display: 'flex', gap: '3rem', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ marginTop: '5rem', display: 'flex', gap: 'clamp(0.5rem, 3vw, 3rem)', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' }}>
                         <div style={{ textAlign: 'center' }}>
-                            <div style={{ opacity: 0.4, fontSize: '0.85rem', letterSpacing: '3px', marginBottom: '0.5rem' }}>FROM</div>
-                            <div style={{ fontSize: '2rem', fontWeight: 900, color: '#fff' }}>DIGITAL</div>
+                            <div style={{ opacity: 0.4, fontSize: '0.75rem', letterSpacing: '2px', marginBottom: '0.5rem' }}>FROM</div>
+                            <div style={{ fontSize: 'clamp(1.5rem, 5vw, 2rem)', fontWeight: 900, color: '#fff' }}>DIGITAL</div>
                         </div>
-                        <div style={{ fontSize: '2.5rem', opacity: 0.3, color: '#fff' }}>→</div>
+                        <div style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', opacity: 0.3, color: '#fff', margin: '0 0.5rem' }}>→</div>
                         <div style={{ textAlign: 'center' }}>
-                            <div style={{ opacity: 0.4, fontSize: '0.85rem', letterSpacing: '3px', marginBottom: '0.5rem' }}>TO</div>
-                            <div style={{ fontSize: '2rem', fontWeight: 900, color: 'var(--accent-side-a)' }}>PHYSICAL</div>
+                            <div style={{ opacity: 0.4, fontSize: '0.75rem', letterSpacing: '2px', marginBottom: '0.5rem' }}>TO</div>
+                            <div style={{ fontSize: 'clamp(1.5rem, 5vw, 2rem)', fontWeight: 900, color: 'var(--accent-side-a)' }}>PHYSICAL</div>
                         </div>
                     </div>
                 </motion.div>
