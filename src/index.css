@@ -1,27 +1,113 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Instrument+Serif:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap');
 
 :root {
-  --font-heading: 'Outfit', sans-serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
+  /* Apple-inspired Typography System */
+  --font-heading: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
   --font-accent: 'Instrument Serif', serif;
+  
+  /* Space Gray & Jet Black Palette */
+  --bg-black: #000000;
+  --bg-deep-gray: #000000;
+  --bg-card: #080808;
+  
+  --text-primary: rgba(255, 255, 255, 0.94);
+  --text-secondary: rgba(255, 255, 255, 0.6);
+  --text-muted: rgba(255, 255, 255, 0.4);
+  
+  /* Glassmorphism Specs (Apple-style) */
+  --glass-bg: rgba(10, 10, 12, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: blur(25px);
+
+  /* Accents - Silver/Frosted Premium (Apple-style) */
+  --accent-primary: #ffffff;
+  --accent-silver: #a1a1aa;
+  --accent-silver-metallic: linear-gradient(135deg, #ffffff 0%, #a1a1aa 100%);
+  --accent-silver-glow: rgba(255, 255, 255, 0.15);
+  
+  --accent-side-a: #3b82f6;
+  --accent-side-a-glow: rgba(59, 130, 246, 0.2);
+  --accent-digital-teal: var(--accent-side-a);
+  --accent-digital-teal-glow: var(--accent-side-a-glow);
+  
+  /* Active Theme Variables */
+  --theme-accent: var(--accent-primary);
+  --perspective: 2000px;
 }
 
-/* Reset default vite margins */
-*, *::before, *::after {
+
+/* 3D Interactivity Utilities */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective-2000 {
+  perspective: 2000px;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.parallax-container {
+  overflow: hidden;
+  position: relative;
+}
+
+
+/* Side B Overrides */
+.side-b-theme {
+  --theme-accent: var(--accent-gold);
+  --bg-black: #000000;
+}
+
+* {
   box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  -webkit-tap-highlight-color: transparent;
-  user-select: none;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-black);
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-  background-color: #09090b;
   font-family: var(--font-body);
-  color: #fafafa;
+  color: var(--text-primary);
+  background: var(--bg-black);
+  line-height: 1.5;
+}
+
+
+/* Storytelling Background Mesh */
+.story-mesh-bg {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 100% 100%, rgba(59, 130, 246, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Apple-style Smooth Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-black);
+}
+::-webkit-scrollbar-thumb {
+  background: #3a3a3c;
+  border-radius: 10px;
+  border: 3px solid var(--bg-black);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #48484a;
 }
 
 body.popup-active {
@@ -36,8 +122,130 @@ body.popup-active .crossover-toggle-container {
   filter: blur(10px);
 }
 
-button, a, [role="button"], .crossover-toggle-container, .sphere-root {
+.landing-page-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.mesh-bg {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 100%, #1c1c1e 0%, #000000 70%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+button, a, [role="button"], .crossover-toggle-container, .sphere-root, .interactive-card, .wheel-segment {
   -webkit-tap-highlight-color: transparent !important;
   user-select: none !important;
   -webkit-user-select: none !important;
+  -webkit-touch-callout: none !important; /* Disables long-press menu on iOS */
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  text-decoration: none;
+}
+
+button:active {
+  transform: scale(0.96);
+}
+
+/* Footer Styling */
+.modern-footer {
+  padding: 6rem 2rem 4rem;
+  background: var(--bg-deep-gray);
+  border-top: 1px solid var(--glass-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.footer-link-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-weight: 500;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+
+.footer-link-btn:hover {
+  color: #fff;
+}
+
+.footer-social-link {
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+}
+
+.footer-social-link:hover {
+  color: #fff;
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.footer-author {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  transition: border-color 0.3s ease;
+}
+
+.footer-author:hover {
+  border-color: #fff;
+}
+
+.legal-text {
+  font-family: var(--font-body);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.2px;
+}
+
+/* Animations & Polishes */
+@keyframes pulse-glow {
+  0% { box-shadow: 0 0 0 0 var(--accent-gold-glow); }
+  70% { box-shadow: 0 0 0 15px rgba(212, 175, 55, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite;
+}
+
+/* Mobile Utilities */
+@media (max-width: 768px) {
+  section {
+    padding: 4rem 1.5rem !important;
+  }
+  
+  h1, h2 {
+    letter-spacing: -1px !important;
+  }
+  
+  .footer-links {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .horizontal-scroll-mobile {
+    overflow-x: auto;
+    width: 100vw;
+    padding: 0 1.5rem;
+    margin-left: -1.5rem;
+    scroll-snap-type: x mandatory;
+  }
 }

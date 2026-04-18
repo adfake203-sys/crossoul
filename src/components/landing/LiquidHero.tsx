@@ -20,6 +20,7 @@ export default function LiquidHero({}: Props) {
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.3em' }}>
             <SplitBlurText 
                 text="CROSSOUL" 
+                className="frosted-silver-text"
                 style={{ 
                     fontFamily: 'var(--font-heading)', 
                     fontSize: 'clamp(4rem, 15vw, 10rem)', 
@@ -32,9 +33,10 @@ export default function LiquidHero({}: Props) {
                 style={{ 
                     fontFamily: 'var(--font-heading)', 
                     fontSize: 'clamp(1rem, 3vw, 2.5rem)', 
-                    opacity: 0.5, 
+                    opacity: 0.3, 
                     fontWeight: 600,
-                    letterSpacing: '-1px'
+                    letterSpacing: '-1px',
+                    color: '#fff'
                 }} 
             />
           </div>
@@ -45,14 +47,14 @@ export default function LiquidHero({}: Props) {
                 fontFamily: 'var(--font-heading)', 
                 fontSize: 'clamp(1.5rem, 5vw, 4rem)', 
                 fontWeight: 800, 
-                color: '#a5b4fc', 
+                color: '#fff', 
                 marginTop: '0.5rem',
                 letterSpacing: '-1.5px'
             }} 
           />
           <p style={{ 
             fontFamily: 'var(--font-body)',
-            color: '#71717a', 
+            color: '#a1a1aa', 
             fontSize: '1.2rem', 
             marginTop: '1.5rem', 
             fontWeight: 500, 

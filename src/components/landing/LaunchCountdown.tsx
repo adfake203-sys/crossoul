@@ -30,7 +30,7 @@ export default function LaunchCountdown() {
     return () => clearInterval(timer);
   }, [targetDate]);
 
-  const TimeUnit = ({ value, label }: { value: number, label: string }) => (
+  const CountdownUnit = ({ value, label }: { value: number, label: string }) => (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: '80px' }}>
       <motion.div
         key={value}
@@ -40,7 +40,7 @@ export default function LaunchCountdown() {
       >
         {value.toString().padStart(2, '0')}
       </motion.div>
-      <div style={{ fontSize: '0.75rem', fontWeight: 800, color: '#6366f1', letterSpacing: '2px', textTransform: 'uppercase', opacity: 0.8 }}>
+      <div style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--accent-side-a)', letterSpacing: '2px', textTransform: 'uppercase', opacity: 0.8 }}>
         {label}
       </div>
     </div>
@@ -48,9 +48,6 @@ export default function LaunchCountdown() {
 
   return (
     <section style={{ padding: '4rem 1rem 0', background: 'transparent', position: 'relative', overflow: 'hidden' }}>
-      {/* Glow effect */}
-      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '300px', height: '300px', background: 'radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%)', filter: 'blur(40px)', zIndex: 1 }} />
-
       <div style={{ position: 'relative', zIndex: 10, textAlign: 'center' }}>
         <motion.div
            initial={{ opacity: 0, y: 20 }}
@@ -58,30 +55,60 @@ export default function LaunchCountdown() {
            viewport={{ once: true }}
            transition={{ duration: 0.8 }}
         >
-          <p style={{ color: '#71717a', fontSize: '0.9rem', fontWeight: 600, letterSpacing: '4px', textTransform: 'uppercase', marginBottom: '2rem' }}>
-            The Countdown Begins
-          </p>
-
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap', marginBottom: '3rem' }}>
-            <TimeUnit value={timeLeft.days} label="Days" />
-            <TimeUnit value={timeLeft.hours} label="Hours" />
-            <TimeUnit value={timeLeft.minutes} label="Minutes" />
-            <TimeUnit value={timeLeft.seconds} label="Seconds" />
-          </div>
-
-          <p style={{ 
-            color: '#fff', 
-            fontSize: '1.2rem', 
-            fontStyle: 'italic', 
-            maxWidth: '500px', 
-            margin: '0 auto', 
-            opacity: 0.8,
-            lineHeight: 1.6
+          <span style={{ 
+            display: 'block',
+            fontSize: '0.8rem', 
+            fontWeight: 800, 
+            color: 'var(--accent-side-a)',
+            letterSpacing: '5px',
+            textTransform: 'uppercase',
+            marginBottom: '1rem',
+            textShadow: '0 0 20px var(--accent-side-a-glow)'
           }}>
-            "Building something worth the wait takes time. Resonance isn't forced; it's grown."
-          </p>
+            FOUNDER ADMITTANCE
+          </span>
+          <h2 style={{ 
+            fontFamily: 'var(--font-heading)', 
+            fontSize: 'clamp(2.5rem, 8vw, 6rem)', 
+            fontWeight: 950, 
+            color: '#fff', 
+            lineHeight: 0.9, 
+            letterSpacing: '-3px' 
+          }}>
+            THE <span className="frosted-silver-text">FINAL</span> <br/> COUNTDOWN
+          </h2>
         </motion.div>
       </div>
+
+      {/* Countdown Numbers */}
+      <div style={{ 
+        display: 'flex', 
+        gap: 'min(3vw, 2rem)', 
+        justifyContent: 'center', 
+        perspective: '1000px',
+        marginTop: '3rem'
+      }}>
+        <CountdownUnit value={timeLeft.days} label="DAYS" />
+        <CountdownUnit value={timeLeft.hours} label="HOURS" />
+        <CountdownUnit value={timeLeft.minutes} label="MINS" />
+        <CountdownUnit value={timeLeft.seconds} label="SECS" />
+      </div>
+
+      {/* Energy Aura */}
+      <motion.div
+        animate={{
+          opacity: [0.1, 0.2, 0.1],
+          scale: [1, 1.1, 1],
+        }}
+        transition={{ duration: 4, repeat: Infinity }}
+        style={{
+          position: 'absolute',
+          inset: -50,
+          background: 'radial-gradient(circle at 50% 50%, var(--accent-side-a-glow) 0%, transparent 70%)',
+          zIndex: -1,
+          filter: 'blur(40px)'
+        }}
+      />
     </section>
   );
 }

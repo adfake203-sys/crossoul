@@ -1,6 +1,6 @@
 import { motion, type Variants } from 'framer-motion';
 
-export default function SplitBlurText({ text, style }: { text: string, style?: React.CSSProperties }) {
+export default function SplitBlurText({ text, style, className }: { text: string, style?: React.CSSProperties, className?: string }) {
   const words = text.split(' ');
 
   const container: Variants = {
@@ -15,7 +15,7 @@ export default function SplitBlurText({ text, style }: { text: string, style?: R
 
   return (
     <motion.div 
-      className="hero-title"
+      className={`hero-title ${className || ''}`}
       variants={container}
       initial="hidden"
       animate="show"
@@ -26,7 +26,7 @@ export default function SplitBlurText({ text, style }: { text: string, style?: R
           return <div key={i} style={{ flexBasis: '100%', height: 0 }} />
         }
         return (
-          <motion.span key={i} variants={item} style={{ display: 'inline-block' }}>
+          <motion.span key={i} variants={item} className={className} style={{ display: 'inline-block' }}>
             {word}
           </motion.span>
         )

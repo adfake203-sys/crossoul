@@ -13,13 +13,19 @@ interface Props {
 
 export default function WaitlistModal({ isOpen, onClose }: Props) {
   const [email, setEmail] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [region, setRegion] = useState('');
+  const [college, setCollege] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || !fullName || !region || !college) {
+      setError("Please fill in all fields.");
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
@@ -27,7 +33,10 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
     try {
       await addDoc(collection(db, 'waitlist'), {
         email: email.toLowerCase().trim(),
-        source: 'mvp_builder_game',
+        fullName: fullName.trim(),
+        region: region.trim(),
+        college: college.trim(),
+        source: 'landing_cta',
         createdAt: serverTimestamp()
       });
 
@@ -37,6 +46,9 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
       setTimeout(() => {
         setIsSubmitted(false);
         setEmail('');
+        setFullName('');
+        setRegion('');
+        setCollege('');
         onClose();
       }, 3500);
     } catch (err: any) {
@@ -66,13 +78,16 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
             style={{
               position: 'relative',
               width: '100%',
-              maxWidth: '450px',
-              background: 'rgba(24, 24, 27, 0.8)',
+              maxWidth: '500px',
+              maxHeight: '90vh',
+              background: 'rgba(24, 24, 27, 0.9)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
               borderRadius: '32px',
               padding: '2.5rem',
               boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-              overflow: 'hidden'
+              overflowY: 'auto',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
             }}
           >
             {/* Design accents */}
@@ -80,7 +95,7 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
 
             <button 
               onClick={onClose}
-              style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', cursor: 'pointer' }}
+              style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', cursor: 'pointer', zIndex: 10 }}
             >
               <X size={18} />
             </button>
@@ -98,7 +113,7 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
                     color: '#a5b4fc', 
                     fontSize: '0.75rem', 
                     fontWeight: 700, 
-                    marginBottom: '1.5rem',
+                    marginBottom: '1rem',
                     letterSpacing: '0.5px'
                 }}>
                   <Sparkles size={14} /> JOIN THE MOVEMENT
@@ -106,9 +121,9 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
 
                 <h2 style={{ 
                     fontFamily: 'var(--font-heading)',
-                    fontSize: '2.5rem', 
+                    fontSize: '2.4rem', 
                     fontWeight: 900, 
-                    marginBottom: '1rem', 
+                    marginBottom: '0.8rem', 
                     color: '#fff', 
                     letterSpacing: '-1.5px',
                     lineHeight: 1
@@ -116,55 +131,66 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
                 <p style={{ 
                     fontFamily: 'var(--font-body)',
                     color: '#a1a1aa', 
-                    fontSize: '1rem', 
-                    lineHeight: '1.5', 
-                    marginBottom: '2rem',
+                    fontSize: '0.95rem', 
+                    lineHeight: '1.4', 
+                    marginBottom: '1.8rem',
                     letterSpacing: '-0.2px'
                 }}>
-                  Experience a mindful world of resonance. Be the first to know when we launch the next phase of human connection.
+                  Experience a mindful world of resonance. Be the first to know when we launch the next phase.
                 </p>
 
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
-                  <div style={{ position: 'relative' }}>
-                    <input 
-                      type="email" 
-                      required
-                      placeholder="resonance@crossoul.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                    <InputWrapper 
+                      type="text"
+                      placeholder="Full Name"
+                      value={fullName}
+                      onChange={setFullName}
                       disabled={isLoading}
-                      style={{
-                        width: '100%',
-                        padding: '1.2rem',
-                        borderRadius: '16px',
-                        background: 'rgba(255,255,255,0.03)',
-                        border: `1px solid ${error ? '#ef4444' : 'rgba(255,255,255,0.1)'}`,
-                        color: '#fff',
-                        fontSize: '1rem',
-                        outline: 'none',
-                        transition: 'all 0.2s',
-                        cursor: isLoading ? 'not-allowed' : 'text'
-                      }}
                     />
-                    {error && (
-                      <p style={{ color: '#ef4444', fontSize: '0.75rem', marginTop: '0.5rem', fontWeight: 600 }}>
-                        {error}
-                      </p>
-                    )}
+                    <InputWrapper 
+                      type="email"
+                      placeholder="Email Address"
+                      value={email}
+                      onChange={setEmail}
+                      disabled={isLoading}
+                    />
+                    <InputWrapper 
+                      type="text"
+                      placeholder="Region / City"
+                      value={region}
+                      onChange={setRegion}
+                      disabled={isLoading}
+                    />
+                    <InputWrapper 
+                      type="text"
+                      placeholder="College / University Name"
+                      value={college}
+                      onChange={setCollege}
+                      disabled={isLoading}
+                    />
                   </div>
+
+                  {error && (
+                    <p style={{ color: '#ef4444', fontSize: '0.75rem', textAlign: 'center', fontWeight: 600 }}>
+                      {error}
+                    </p>
+                  )}
+
                   <button 
                     type="submit"
                     disabled={isLoading}
                     style={{
                       fontFamily: 'var(--font-heading)',
                       width: '100%',
-                      padding: '1.2rem',
+                      padding: '1.1rem',
+                      marginTop: '0.5rem',
                       background: isLoading ? '#3f3f46' : 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)',
                       color: 'white',
                       border: 'none',
                       borderRadius: '16px',
                       fontWeight: 800,
-                      fontSize: '1.1rem',
+                      fontSize: '1rem',
                       letterSpacing: '0.5px',
                       cursor: isLoading ? 'not-allowed' : 'pointer',
                       display: 'flex',
@@ -200,5 +226,30 @@ export default function WaitlistModal({ isOpen, onClose }: Props) {
         </div>
       )}
     </AnimatePresence>
+  );
+}
+
+function InputWrapper({ type, placeholder, value, onChange, disabled }: any) {
+  return (
+    <input 
+      type={type}
+      required
+      placeholder={placeholder}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      disabled={disabled}
+      style={{
+        width: '100%',
+        padding: '1rem',
+        borderRadius: '12px',
+        background: 'rgba(255,255,255,0.03)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        color: '#fff',
+        fontSize: '0.95rem',
+        outline: 'none',
+        transition: 'all 0.2s',
+        cursor: disabled ? 'not-allowed' : 'text'
+      }}
+    />
   );
 }

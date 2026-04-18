@@ -31,7 +31,7 @@ export default function RotatingText({ texts, interval = 2500, className, style 
           animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
           exit={{ y: -50, opacity: 0, filter: 'blur(8px)' }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-          style={{ position: 'absolute', display: 'inline-block', whiteSpace: 'nowrap', left: 0, right: 0, textAlign: 'center', color: 'var(--accent, #a5b4fc)' }}
+          style={{ position: 'absolute', display: 'inline-block', whiteSpace: 'nowrap', left: 0, right: 0, textAlign: 'center', color: 'inherit' }}
         >
           {texts[index]}
         </motion.span>

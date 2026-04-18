@@ -22,7 +22,7 @@ const ConfettiRain = () => {
     canvas.height = window.innerHeight;
 
     const particles: any[] = [];
-    const colors = ['#6366f1', '#a5b4fc', '#4f46e5', '#818cf8', '#ffffff'];
+    const colors = ['#ffffff', '#a1a1aa', '#71717a', '#333333', '#ffffff'];
 
     const createParticle = () => {
       if (!isActive) return;
@@ -124,10 +124,10 @@ const ComedyErrorModal = ({ isOpen, onClose, message, memeSrc }: { isOpen: boole
           </p>
           <button 
             onClick={onClose}
+            className="glass-button-premium"
             style={{
-              background: '#6366f1',
               color: '#fff',
-              border: 'none',
+              border: '1px solid rgba(255,255,255,0.2)',
               padding: '0.75rem 2rem',
               borderRadius: '12px',
               fontWeight: 800,
@@ -342,8 +342,8 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
             fontFamily: 'var(--font-heading)',
             fontSize: 'clamp(2rem, 5vw, 3.5rem)', 
             fontWeight: 900, 
-            color: isCompleted ? '#6366f1' : '#fff',
-            textShadow: isCompleted ? '0 0 30px rgba(99, 102, 241, 0.5)' : 'none',
+            color: isCompleted ? '#ffffff' : '#fff',
+            textShadow: isCompleted ? '0 0 30px rgba(255, 255, 255, 0.3)' : 'none',
             transition: 'all 0.5s ease',
             lineHeight: 1,
             letterSpacing: '-2px'
@@ -353,7 +353,7 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
           {!isCompleted && (
             <p style={{ color: '#a1a1aa', marginTop: '1.2rem', fontSize: '1.1rem', maxWidth: '600px', margin: '1rem auto', lineHeight: 1.5 }}>
               A movement isn't built in a day. <br/> 
-              <span style={{ color: '#818cf8', fontWeight: 700 }}>THE CHALLENGE:</span> Drag from the <span style={{ color: '#fff' }}>IDEA</span> node through the stages in order.
+              <span style={{ color: '#fff', fontWeight: 700 }}>THE CHALLENGE:</span> Drag from the <span style={{ color: '#fff' }}>IDEA</span> node through the stages in order.
             </p>
           )}
         </div>
@@ -371,9 +371,9 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
             maxWidth: '800px',
             margin: '0 auto', 
             position: 'relative',
-            background: 'rgba(99, 102, 241, 0.02)',
+            background: 'rgba(255, 255, 255, 0.02)',
             borderRadius: '32px',
-            border: '1px solid rgba(99, 102, 241, 0.1)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
             backdropFilter: 'blur(2px)',
             touchAction: 'auto' // Allow scrolling on the background
           }}
@@ -383,7 +383,7 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
             position: 'absolute', 
             inset: 0, 
             opacity: 0.05, 
-            background: 'radial-gradient(circle, #6366f1 1px, transparent 1px) 0 0 / 24px 24px',
+            background: 'radial-gradient(circle, #ffffff 1px, transparent 1px) 0 0 / 24px 24px',
             borderRadius: '32px'
           }}></div>
 
@@ -412,13 +412,13 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
                 return (
                   <motion.polyline
                     points={currentPoints}
-                    stroke="#818cf8"
+                    stroke="#ffffff"
                     strokeWidth="4"
                     vectorEffect="non-scaling-stroke"
                     strokeLinejoin="round"
                     strokeLinecap="round"
                     fill="none"
-                    style={{ filter: 'drop-shadow(0 0 4px rgba(129, 140, 248, 0.8))' }}
+                    style={{ filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.5))' }}
                   />
                 );
               })()}
@@ -434,7 +434,7 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
                 onPointerDown={(e) => startDrag(e, node.id)}
                 animate={{
                     scale: isReached ? 1.2 : 1, // Increased scale mask for a sturdy visual lock
-                    boxShadow: isReached ? '0 0 30px rgba(99,102,241,0.6)' : 'none',
+                    boxShadow: isReached ? '0 0 30px rgba(255,255,255,0.4)' : 'none',
                     opacity: errorModal.isOpen ? 0 : 1
                 }}
                 style={{
@@ -451,8 +451,8 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
                 <div style={{
                   width: '24px', // Slightly larger to fully occlude the 4px stroke cap beneath
                   height: '24px',
-                  background: isReached ? '#6366f1' : '#1e1e2e',
-                  border: `3px solid ${isReached ? '#818cf8' : '#3f3f46'}`,
+                  background: isReached ? '#ffffff' : '#1e1e2e',
+                  border: `3px solid ${isReached ? '#a1a1aa' : '#3f3f46'}`,
                   borderRadius: '50%',
                   transition: 'background 0.3s ease, border 0.3s ease',
                   position: 'relative',
@@ -470,8 +470,8 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
                         top: '-40px',
                         left: '50%',
                         transform: 'translateX(-50%)',
-                        background: '#6366f1',
-                        color: '#fff',
+                        background: '#ffffff',
+                        color: '#000',
                         padding: '4px 10px',
                         borderRadius: '6px',
                         fontSize: '0.6rem',
@@ -480,7 +480,7 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
                       }}
                     >
                       START MISSION
-                      <div style={{ position: 'absolute', bottom: '-4px', left: '50%', transform: 'translateX(-50%)', borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #6366f1' }} />
+                      <div style={{ position: 'absolute', bottom: '-4px', left: '50%', transform: 'translateX(-50%)', borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #ffffff' }} />
                     </motion.div>
                   )}
 
@@ -540,18 +540,16 @@ export default function EcosystemFocus({ onJoin }: { onJoin?: () => void }) {
               <motion.button 
                 onClick={onJoin}
                 whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                className="glass-button-premium"
                 style={{
                     textDecoration: 'none',
-                    background: 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)',
                     padding: '1.25rem 3rem',
                     borderRadius: '16px',
                     color: '#fff',
                     fontWeight: 900,
                     fontSize: '1.1rem',
                     letterSpacing: '1px',
-                    boxShadow: '0 20px 40px rgba(99, 102, 241, 0.4)',
-                    border: '1px solid rgba(255,255,255,0.3)',
+                    border: '1px solid rgba(255,255,255,0.2)',
                     cursor: 'pointer'
                 }}
               >

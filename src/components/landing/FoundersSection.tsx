@@ -92,9 +92,10 @@ export default function FoundersSection() {
             maxWidth: '1000px', 
             margin: '0 auto',
             letterSpacing: '0px',
-            opacity: 0.95
+            opacity: 0.95,
+            textShadow: '0 0 40px var(--accent-side-a-glow)'
           }}>
-            "We built this because <span style={{ color: 'var(--accent-side-b, #6366f1)', fontFamily: 'var(--font-accent)', fontStyle: 'italic' }}>we were these students.</span> Sitting in a tier-2 city, with things to say and nowhere to say them. Crossoul is the platform we needed and nobody built. <span style={{ color: 'var(--accent-side-b, #6366f1)', fontFamily: 'var(--font-accent)', fontStyle: 'italic' }}>So we did.</span>"
+            "We built this because <span style={{ color: '#fff', fontFamily: 'var(--font-accent)', fontStyle: 'italic', textShadow: '0 0 20px var(--accent-side-a-glow)' }}>we were these students.</span> Sitting in a tier-2 city, with things to say and nowhere to say them. Crossoul is the platform we needed and nobody built. <span style={{ color: '#fff', fontFamily: 'var(--font-accent)', fontStyle: 'italic', textShadow: '0 0 20px var(--accent-side-a-glow)' }}>So we did.</span>"
           </h2>
         </motion.div>
 
@@ -117,7 +118,7 @@ export default function FoundersSection() {
           }}>
             <Folder 
               size={isMobile ? 2.2 : 3.5} 
-              color="#6366f1" 
+              color="#ffffff" 
               items={founderItems}
               title="The Pulse Behind the Movement"
               onCardClick={handleCardClick}
