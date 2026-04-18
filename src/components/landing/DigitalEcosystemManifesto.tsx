@@ -46,7 +46,7 @@ const problems = [
   }
 ];
 
-function ProblemSection({ prob, idx }: { prob: any, idx: number }) {
+function ProblemSection({ prob }: { prob: any }) {
     const [isHolding, setIsHolding] = useState(false);
     const timerRef = useRef<any>(null);
 

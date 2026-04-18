@@ -6,10 +6,9 @@ import { collection, getCountFromServer } from 'firebase/firestore';
 
 interface Props {
   onJoin: () => void;
-  brandText?: string;
 }
 
-export default function StickyHeader({ onJoin, brandText = "CROSSOUL" }: Props) {
+export default function StickyHeader({ onJoin }: Props) {
   const [scrolled, setScrolled] = useState(false);
   const [isGameActive, setIsGameActive] = useState(false);
   const [memberCount, setMemberCount] = useState(121);
@@ -47,13 +46,6 @@ export default function StickyHeader({ onJoin, brandText = "CROSSOUL" }: Props) 
         window.removeEventListener('WAITLIST_JOINED', handleWaitlistJoin);
     };
   }, []);
-
-  // Helper for ordinals
-  const getOrdinal = (n: number) => {
-    const s = ["th", "st", "nd", "rd"];
-    const v = n % 100;
-    return n + (s[(v - 20) % 10] || s[v] || s[0]);
-  };
 
   return (
     <AnimatePresence>
