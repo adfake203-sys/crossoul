@@ -121,42 +121,27 @@ export default function LandingPage({ onShowAuth }: Props) {
       {viewMode === 'side-b' && <SideStoryProgress chapters={VISION_CHAPTERS} />}
 
       <main>
-        <AnimatePresence mode="wait">
-          {viewMode === 'side-a' ? (
-            <motion.div
-              key="side-a"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <LiquidHero />
-              <DigitalEcosystemManifesto />
-              <JourneySection />
-              <EcosystemFocus onJoin={onShowAuth} />
-              <LaunchCountdown />
-              <FoundersSection />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="side-b"
-              className="side-b-wrapper"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <FloatingThreads />
-              <ThreadsHero />
-              <IdeathonProblem />
-              <TheResonanceProtocol />
-              <HumanPsychology />
-              <RefinedOutcome />
-              <CircleOutcome />
-              <CircleGallery />
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {viewMode === 'side-a' ? (
+          <div key="side-a">
+            <LiquidHero />
+            <DigitalEcosystemManifesto />
+            <JourneySection />
+            <EcosystemFocus onJoin={onShowAuth} />
+            <LaunchCountdown />
+            <FoundersSection />
+          </div>
+        ) : (
+          <div className="side-b-wrapper" key="side-b">
+            <FloatingThreads />
+            <ThreadsHero />
+            <IdeathonProblem />
+            <TheResonanceProtocol />
+            <HumanPsychology />
+            <RefinedOutcome />
+            <CircleOutcome />
+            <CircleGallery />
+          </div>
+        )}
       </main>
 
       <ModernFooter 
