@@ -209,7 +209,7 @@ export default function DigitalEcosystemManifesto() {
                 {/* The 6 Problems */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8rem', padding: '4rem 0' }}>
                     {problems.map((prob, idx) => (
-                        <ProblemSection key={idx} prob={prob} idx={idx} />
+                        <ProblemSection key={idx} prob={prob} />
                     ))}
                 </div>
 
