@@ -1,5 +1,6 @@
-import { motion, useScroll, useTransform } from 'framer-motion';
 import { useRef } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+
 import { UserPlus, MessageSquare, Link, Zap } from 'lucide-react';
 
 const steps = [

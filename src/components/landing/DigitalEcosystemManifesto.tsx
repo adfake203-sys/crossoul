@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion';
 import { useState, useRef } from 'react';
+import { motion } from 'framer-motion';
+
 
 const problems = [
   {
@@ -167,10 +168,9 @@ export default function DigitalEcosystemManifesto() {
             }}>
                 <motion.div 
                     animate={{ 
-                        scale: [1, 1.2, 1],
-                        rotate: [0, 90, 0]
+                        scale: [1, 1.1, 1],
                     }}
-                    transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+                    transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
                     style={{
                         position: 'absolute',
                         top: '10%',
@@ -178,8 +178,9 @@ export default function DigitalEcosystemManifesto() {
                         width: '60vw',
                         height: '60vw',
                         background: 'radial-gradient(circle, var(--accent-side-a) 0%, transparent 60%)',
-                        filter: 'blur(120px)',
-                        borderRadius: '50%'
+                        filter: 'blur(80px)',
+                        borderRadius: '50%',
+                        willChange: 'transform'
                     }}
                 />
             </div>

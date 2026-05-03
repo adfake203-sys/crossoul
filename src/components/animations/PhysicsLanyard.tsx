@@ -1,5 +1,6 @@
+import { useState, useRef } from 'react';
 import * as THREE from 'three';
-import React, { useRef, useState, useMemo, createRef, Suspense, Component } from 'react';
+
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Physics, RigidBody, useSphericalJoint, CuboidCollider, BallCollider } from '@react-three/rapier';
 import { Html } from '@react-three/drei';

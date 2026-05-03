@@ -1,5 +1,3 @@
-import React from 'react';
-
 interface FounderCardProps {
   name: string;
   role: string;
@@ -9,7 +7,7 @@ interface FounderCardProps {
   logoSrc: string;
 }
 
-const FounderCard: React.FC<FounderCardProps> = ({ type, logoSrc }) => {
+const FounderCard = ({ type, logoSrc }: FounderCardProps) => {
   return (
     <div className="card-front" style={{ 
       padding: '0.4rem', 

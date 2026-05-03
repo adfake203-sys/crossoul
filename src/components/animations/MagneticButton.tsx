@@ -1,4 +1,5 @@
-import React, { type ReactNode, useRef } from 'react'
+import { useRef } from 'react';
+
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 
 import { HapticManager } from '../../lib/HapticManager';

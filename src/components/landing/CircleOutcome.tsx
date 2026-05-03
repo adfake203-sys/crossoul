@@ -1,6 +1,7 @@
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lightbulb, Rocket, GraduationCap, Network, ChevronRight } from 'lucide-react';
-import { useState, useRef } from 'react';
+
 
 export default function CircleOutcome() {
   const opportunities = [

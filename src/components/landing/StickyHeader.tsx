@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { HapticManager } from '../../lib/HapticManager';
 import { db } from '../../lib/firebase';
@@ -66,9 +67,9 @@ export default function StickyHeader({ onJoin }: Props) {
             display: 'flex',
             alignItems: 'center',
             padding: '0 1.5rem',
-            background: 'rgba(24, 24, 27, 0.85)',
-            backdropFilter: 'blur(24px)',
-            WebkitBackdropFilter: 'blur(24px)',
+            background: 'rgba(24, 24, 27, 0.92)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
             borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
             boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
           }}

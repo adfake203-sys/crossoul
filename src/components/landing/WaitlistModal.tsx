@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, Sparkles, Send, Loader2 } from 'lucide-react';
-import { db } from '../../lib/firebase';
-import { collection, addDoc, serverTimestamp, getCountFromServer } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
 
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../../lib/firebase';
 import { HapticManager } from '../../lib/HapticManager';
+import { ordinal, useResonanceCount } from '../../lib/useResonanceCount';
+import MagneticButton from '../layout/MagneticButton';
 
 interface Props {
   isOpen: boolean;
@@ -12,293 +12,138 @@ interface Props {
 }
 
 export default function WaitlistModal({ isOpen, onClose }: Props) {
+  const memberCount = useResonanceCount();
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
   const [region, setRegion] = useState('');
-  const [college, setCollege] = useState('');
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [memberCount, setMemberCount] = useState<number | null>(null);
+  const [msg, setMsg] = useState<{ text: string; type: 'error' | 'success' } | null>(null);
 
   useEffect(() => {
     if (isOpen) {
-      document.body.classList.add('popup-active');
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.classList.remove('popup-active');
+      document.body.style.overflow = '';
     }
-    return () => document.body.classList.remove('popup-active');
+
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
-
-  useEffect(() => {
-    if (isOpen && memberCount === null) {
-      const fetchCount = async () => {
-        try {
-          const snapshot = await getCountFromServer(collection(db, 'waitlist'));
-          setMemberCount(120 + snapshot.data().count + 1);
-        } catch (err) {
-          console.error("Failed fetching waitlist count", err);
-        }
-      };
-      fetchCount();
-    }
-  }, [isOpen, memberCount]);
-
-  const getOrdinal = (n: number) => {
-    const s = ["th", "st", "nd", "rd"];
-    const v = n % 100;
-    return n + (s[(v - 20) % 10] || s[v] || s[0]);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !fullName || !region || !college) {
-      setError("Please fill in all fields.");
+    if (!email || !fullName || !region) {
+      setMsg({ text: 'Please fill in all fields.', type: 'error' });
       return;
     }
 
     setIsLoading(true);
-    setError(null);
+    setMsg(null);
 
     try {
       await addDoc(collection(db, 'waitlist'), {
         email: email.toLowerCase().trim(),
         fullName: fullName.trim(),
         region: region.trim(),
-        college: college.trim(),
-        source: 'landing_cta',
-        createdAt: serverTimestamp()
+        source: 'landing_v2',
+        createdAt: serverTimestamp(),
       });
 
-      setIsSubmitted(true);
+      setMsg({
+        text: `You're in. ${memberCount + 1} members logged in. The next one becomes the ${ordinal(memberCount + 2)}.`,
+        type: 'success',
+      });
       window.dispatchEvent(new CustomEvent('WAITLIST_JOINED'));
       HapticManager.notification();
 
       setTimeout(() => {
-        setIsSubmitted(false);
+        setMsg(null);
         setEmail('');
         setFullName('');
         setRegion('');
-        setCollege('');
         onClose();
-      }, 3500);
-    } catch (err: any) {
-      console.error("Error adding document: ", err);
-      setError("Something went wrong. Please try again.");
+      }, 2600);
+    } catch (err) {
+      console.error('Error adding document: ', err);
+      setMsg({ text: 'Something went wrong. Please try again.', type: 'error' });
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (!isOpen) return null;
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(10px)' }}
+    <div
+      style={{ position: 'fixed', inset: 0, zIndex: 99980, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,.8)', backdropFilter: 'blur(12px)', padding: '1.5rem' }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="wl-box">
+        <button className="wl-close" onClick={onClose}>x</button>
+        <div style={{ marginBottom: '1.2rem', color: '#fff', display: 'flex', justifyContent: 'center' }}>
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4.5 16.5c-1.5 1.5-1.5 4 0 4s4-1.5 4-4M12 3c0 0-4 2-5 8l5 5c6-1 8-5 8-5L12 3z"/>
+            <circle cx="15" cy="9" r="1.5"/>
+            <path d="M3 21l4-4"/>
+          </svg>
+        </div>
+        <div className="wl-title">Join the Waitlist</div>
+        <p className="wl-sub">
+          {memberCount} members joined the resonance. Be the {ordinal(memberCount + 1)}.
+          <br />No spam, ever.
+        </p>
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+          <input
+            className="wl-in"
+            type="text"
+            placeholder="Your name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            disabled={isLoading}
+            required
+          />
+          <input
+            className="wl-in"
+            type="email"
+            placeholder="your@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={isLoading}
+            required
+          />
+          <input
+            className="wl-in"
+            type="text"
+            placeholder="Your city / region (e.g. Hyderabad, India)"
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
+            disabled={isLoading}
+            required
           />
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            style={{
-              position: 'relative',
-              width: '100%',
-              maxWidth: '500px',
-              maxHeight: '90vh',
-              background: 'rgba(24, 24, 27, 0.95)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '32px',
-              padding: '2.5rem',
-              boxShadow: '0 30px 60px -12px rgba(0, 0, 0, 0.6)',
-              overflowY: 'auto',
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none'
-            }}
+          <MagneticButton
+            type="submit"
+            className="wl-sub-btn"
+            style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '.5rem', marginTop: '.5rem', opacity: isLoading ? 0.7 : 1 }}
+            disabled={isLoading}
           >
-            {/* Design accents */}
-            <div style={{ position: 'absolute', top: '-50px', right: '-50px', width: '150px', height: '150px', background: 'radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%)', filter: 'blur(20px)' }} />
-
-            <button 
-              onClick={onClose}
-              style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'rgba(255,255,255,0.05)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', cursor: 'pointer', zIndex: 10 }}
-            >
-              <X size={18} />
-            </button>
-
-            {!isSubmitted ? (
-              <>
-                <div style={{ 
-                    fontFamily: 'var(--font-body)',
-                    display: 'inline-flex', 
-                    alignItems: 'center', 
-                    gap: '0.5rem', 
-                    padding: '0.4rem 0.8rem', 
-                    background: 'rgba(123, 45, 142, 0.1)', 
-                    borderRadius: '20px', 
-                    color: '#a5b4fc', 
-                    fontSize: '0.75rem', 
-                    fontWeight: 700, 
-                    marginBottom: '1rem',
-                    letterSpacing: '0.5px'
-                }}>
-                  <Sparkles size={14} /> JOIN THE MOVEMENT
-                </div>
-
-                <h2 style={{ 
-                    fontFamily: 'var(--font-heading)',
-                    fontSize: '2.4rem', 
-                    fontWeight: 900, 
-                    marginBottom: '0.8rem', 
-                    color: '#fff', 
-                    letterSpacing: '-1.5px',
-                    lineHeight: 1
-                }}>Enter the Circle</h2>
-                <p style={{ 
-                    fontFamily: 'var(--font-body)',
-                    color: '#a1a1aa', 
-                    fontSize: '0.95rem', 
-                    lineHeight: '1.4', 
-                    marginBottom: '1rem',
-                    letterSpacing: '-0.2px'
-                }}>
-                  Experience a mindful world of resonance. Be the first to know when we launch the next phase.
-                </p>
-
-                {memberCount !== null && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    style={{
-                      marginBottom: '1.8rem',
-                      padding: '0.8rem 1rem',
-                      background: 'rgba(255, 255, 255, 0.04)',
-                      border: '1px solid rgba(255, 255, 255, 0.08)',
-                      borderRadius: '12px',
-                    }}
-                  >
-                    <p style={{ margin: 0, color: '#e4e4e7', fontSize: '0.85rem', fontWeight: 500 }}>
-                      <strong style={{ color: '#fff', fontSize: '0.95rem' }}>{memberCount - 1}</strong> students already registered for early access. Be the <strong style={{ color: '#fff' }}>{getOrdinal(memberCount)}</strong>.
-                    </p>
-                  </motion.div>
-                )}
-
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                    <InputWrapper 
-                      type="text"
-                      placeholder="Full Name"
-                      value={fullName}
-                      onChange={setFullName}
-                      disabled={isLoading}
-                    />
-                    <InputWrapper 
-                      type="email"
-                      placeholder="Email Address"
-                      value={email}
-                      onChange={setEmail}
-                      disabled={isLoading}
-                    />
-                    <InputWrapper 
-                      type="text"
-                      placeholder="Region / City"
-                      value={region}
-                      onChange={setRegion}
-                      disabled={isLoading}
-                    />
-                    <InputWrapper 
-                      type="text"
-                      placeholder="College / University Name"
-                      value={college}
-                      onChange={setCollege}
-                      disabled={isLoading}
-                    />
-                  </div>
-
-                  {error && (
-                    <p style={{ color: '#ef4444', fontSize: '0.75rem', textAlign: 'center', fontWeight: 600 }}>
-                      {error}
-                    </p>
-                  )}
-
-                  <button 
-                    type="submit"
-                    disabled={isLoading}
-                    style={{
-                      fontFamily: 'var(--font-heading)',
-                      width: '100%',
-                      padding: '1.1rem',
-                      marginTop: '0.5rem',
-                      background: isLoading ? '#3f3f46' : 'linear-gradient(135deg, #4f46e5 0%, #3730a3 100%)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '16px',
-                      fontWeight: 800,
-                      fontSize: '1rem',
-                      letterSpacing: '0.5px',
-                      cursor: isLoading ? 'not-allowed' : 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.8rem',
-                      boxShadow: isLoading ? 'none' : '0 10px 20px rgba(79, 70, 229, 0.3)',
-                      transition: 'all 0.3s ease'
-                    }}
-                  >
-                    {isLoading ? (
-                      <>Processing... <Loader2 className="animate-spin" size={18} /></>
-                    ) : (
-                      <>Reserve my spot <Send size={18} /></>
-                    )}
-                  </button>
-                </form>
-              </>
-            ) : (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                style={{ textAlign: 'center', padding: '2rem 0' }}
-              >
-                <div style={{ width: '64px', height: '64px', background: 'rgba(34, 197, 94, 0.1)', color: '#22c55e', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1.5rem' }}>
-                  <Send size={32} />
-                </div>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: '#fff', marginBottom: '1rem' }}>Momentum Captured!</h2>
-                <p style={{ color: '#22c55e', fontWeight: 700, fontSize: '0.9rem' }}>Welcome to the resonance chain.</p>
-              </motion.div>
+            {isLoading ? 'Processing...' : `Become the ${ordinal(memberCount + 1)}`}
+            {!isLoading && (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+              </svg>
             )}
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
-  );
-}
+          </MagneticButton>
+        </form>
 
-function InputWrapper({ type, placeholder, value, onChange, disabled }: any) {
-  return (
-    <input 
-      type={type}
-      required
-      placeholder={placeholder}
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      disabled={disabled}
-      style={{
-        width: '100%',
-        padding: '1rem',
-        borderRadius: '12px',
-        background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.1)',
-        color: '#fff',
-        fontSize: '0.95rem',
-        outline: 'none',
-        transition: 'all 0.2s',
-        cursor: disabled ? 'not-allowed' : 'text'
-      }}
-    />
+        {msg && (
+          <p className="wl-msg" style={{ color: msg.type === 'error' ? '#f87171' : '#a3e635' }}>
+            {msg.text}
+          </p>
+        )}
+      </div>
+    </div>
   );
 }

@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Crossoul — Collective Thinking. Real Execution.</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --fh:'Outfit',sans-serif;
+  --fb:'Inter',sans-serif;
+  --bg:#080808;
+  --fg:#fafafa;
+  --muted:#71717a;
+  --accent:#6366f1;
+  --accent-glow:rgba(99,102,241,0.25);
+  --gold:#d4af37;
+  --gold-glow:rgba(212,175,55,0.2);
+  --red:#eb4432;
+  --glass:rgba(255,255,255,0.025);
+  --gb:rgba(255,255,255,0.07);
+}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--fb);overflow-x:hidden;cursor:none}
+@media(pointer:coarse){body{cursor:auto}}
+
+/* ── Cursor ── */
+#cur,#cur2{position:fixed;border-radius:50%;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);mix-blend-mode:difference}
+#cur{width:10px;height:10px;background:#fff;transition:transform .1s}
+#cur2{width:38px;height:38px;border:1px solid rgba(255,255,255,.3);transition:all .18s ease}
+@media(pointer:coarse){#cur,#cur2{display:none}}
+
+/* ── Portal overlay ── */
+#portal{position:fixed;inset:0;z-index:99990;pointer-events:none;opacity:0}
+@keyframes portalAnim{0%{opacity:0}40%{opacity:1}65%{opacity:1}100%{opacity:0}}
+#portal.go{animation:portalAnim 1.2s cubic-bezier(.4,0,.2,1) forwards;pointer-events:all}
+
+/* ── Ambient ── */
+.mesh{position:fixed;inset:0;pointer-events:none;z-index:0;filter:blur(50px);
+  background:radial-gradient(circle at 20% 40%,rgba(99,102,241,.07) 0%,transparent 55%),
+             radial-gradient(circle at 80% 20%,rgba(212,175,55,.04) 0%,transparent 55%),
+             radial-gradient(circle at 50% 85%,rgba(139,92,246,.05) 0%,transparent 55%);
+  animation:meshB 22s ease-in-out infinite alternate}
+@keyframes meshB{0%{transform:scale(1) translate(0,0)}100%{transform:scale(1.07) translate(-1%,2%)}}
+.grain{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* ── Floating threads canvas ── */
+#tc{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0;transition:opacity .6s}
+#tc.show{opacity:1}
+
+/* ── Nav ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:8000;display:flex;align-items:center;justify-content:space-between;padding:1.2rem 2.5rem;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--gb);background:rgba(8,8,8,.75);transition:background .3s}
+nav.sc{background:rgba(8,8,8,.96)}
+.logo{font-family:var(--fh);font-size:1.35rem;font-weight:900;letter-spacing:-1px;background:linear-gradient(135deg,#fff 30%,#a1a1aa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-btn{background:#fff;color:#000;border:none;border-radius:100px;padding:.55rem 1.5rem;font-weight:700;font-size:.82rem;font-family:var(--fh);cursor:pointer;letter-spacing:.5px;transition:all .2s}
+.nav-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,255,255,.2)}
+
+/* ── Toggle Pill ── */
+#pill{position:fixed;bottom:1.75rem;left:50%;transform:translateX(-50%);z-index:8500;display:flex;align-items:center;gap:.3rem;padding:.3rem;background:rgba(12,12,14,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.1);border-radius:100px;box-shadow:0 20px 60px rgba(0,0,0,.7)}
+.pb{display:flex;align-items:center;gap:.55rem;padding:.7rem 1.4rem;border:none;border-radius:100px;font-family:var(--fh);font-weight:800;font-size:.8rem;letter-spacing:1px;cursor:pointer;transition:all .25s;white-space:nowrap}
+.pb.digi{background:#fff;color:#000}
+.pb.offli{background:linear-gradient(135deg,#d4af37,#8b6914);color:#fff}
+.pb.dim{background:transparent;color:#52525b}
+
+/* ── Scroll indicator ── */
+.scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;opacity:.25;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;pointer-events:none}
+.sh-line{width:1px;height:40px;background:linear-gradient(to bottom,currentColor,transparent)}
+
+/* ── Fade-in-up utility ── */
+.fiu{opacity:0;transform:translateY(48px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
+.fiu.on{opacity:1;transform:none}
+
+/* ── Kicker ── */
+.kicker{display:block;font-size:.75rem;font-weight:800;letter-spacing:5px;text-transform:uppercase;margin-bottom:1.2rem}
+.kicker.a{color:var(--accent)}
+.kicker.g{color:var(--gold)}
+.kicker.r{color:var(--red)}
+
+/* ── Big wordmark ── */
+.wm{font-family:var(--fh);background:linear-gradient(180deg,#fff 0%,#a1a1aa 55%,rgba(255,255,255,.15) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.wm-gold{font-family:var(--fh);background:linear-gradient(180deg,#fff 0%,var(--gold) 60%,rgba(212,175,55,.25) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* ── Buttons ── */
+.btn{font-family:var(--fh);font-weight:800;border-radius:100px;padding:.9rem 2.4rem;font-size:.95rem;letter-spacing:.5px;border:none;cursor:pointer;transition:all .25s}
+.btn-w{background:#fff;color:#000;box-shadow:0 4px 28px rgba(255,255,255,.15)}
+.btn-w:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(255,255,255,.25)}
+.btn-o{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.2)}
+.btn-o:hover{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.4)}
+.btn-g{background:var(--gold);color:#000;box-shadow:0 4px 28px var(--gold-glow)}
+.btn-g:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(212,175,55,.35)}
+
+/* ── Sections base ── */
+section{position:relative;z-index:2}
+
+/* ─────────── SIDE A ─────────── */
+#hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7rem 1.5rem 5rem;text-align:center}
+.hero-wm{font-size:clamp(4.5rem,15vw,11rem);font-weight:900;letter-spacing:-5px;line-height:.88}
+.hero-for{font-family:var(--fh);font-size:clamp(.9rem,2vw,1.6rem);font-weight:600;opacity:.28;color:#fff;margin-left:.2em}
+.hero-rot{font-family:var(--fh);font-size:clamp(1.4rem,3.5vw,2.8rem);font-weight:800;color:#fff;letter-spacing:-1px;margin-top:.5rem;min-height:1.4em;transition:opacity .35s,transform .35s}
+.hero-sub{color:#71717a;font-size:clamp(.95rem,1.5vw,1.1rem);margin-top:1.4rem;font-weight:500;letter-spacing:-.2px}
+.cta-row{display:flex;gap:1rem;justify-content:center;margin-top:2.5rem;flex-wrap:wrap}
+
+/* manifesto */
+#manifesto{padding:0 0 10rem}
+.mf-center{max-width:1100px;margin:0 auto;padding:0 1.5rem;text-align:center}
+.mf-big{font-size:clamp(3.5rem,10vw,8rem);font-weight:950;letter-spacing:-.07em;line-height:.85}
+.mf-sub{color:rgba(255,255,255,.5);font-size:clamp(1.1rem,2.2vw,1.55rem);margin-top:2rem;line-height:1.55;max-width:720px}
+.result-pill{display:inline-block;margin-top:2.5rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:.85rem 2rem;font-size:1.15rem;font-weight:700}
+.probs{max-width:1100px;margin:0 auto;padding:8rem 1.5rem 0;display:flex;flex-direction:column;gap:8rem}
+.prob{display:flex;flex-direction:column}
+.prob.r{align-items:flex-end;text-align:right}
+.prob-inner{max-width:680px;padding:2.5rem;border-radius:28px;transition:background .3s,box-shadow .3s;position:relative;overflow:hidden;cursor:pointer;user-select:none;-webkit-user-select:none}
+.prob-inner:hover{background:rgba(255,255,255,.02);box-shadow:0 0 60px rgba(99,102,241,.07)}
+.prob-k{font-size:.75rem;font-weight:800;letter-spacing:4px;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}
+.prob-t{font-family:var(--fh);font-size:clamp(1.8rem,4.5vw,3.8rem);font-weight:900;line-height:.95;letter-spacing:-.04em;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.5) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.prob-d{color:rgba(255,255,255,.42);margin-top:1.3rem;line-height:1.65;font-size:1.05rem}
+.prob-hint{margin-top:1.2rem;opacity:.2;font-size:.68rem;letter-spacing:2px;font-weight:700;text-transform:uppercase}
+.prob-sol{position:absolute;inset:0;background:rgba(6,6,8,.9);backdrop-filter:blur(20px);border-radius:28px;border:1px solid rgba(255,255,255,.09);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2.5rem;text-align:center;opacity:0;pointer-events:none;transition:opacity .3s}
+.prob-sol.on{opacity:1;pointer-events:auto}
+.sol-l{font-size:.75rem;font-weight:800;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:1rem}
+.sol-t{font-family:var(--fh);font-size:clamp(1.3rem,2.5vw,2rem);font-weight:800;color:var(--accent);line-height:1.25}
+.bridge{max-width:1100px;margin:0 auto;padding:12rem 1.5rem;text-align:center}
+.bridge-big{font-size:clamp(3.5rem,11vw,9rem);font-weight:950;letter-spacing:-.07em;line-height:.85}
+.bridge-sub{color:rgba(255,255,255,.72);font-size:clamp(1.2rem,2.8vw,2rem);margin-top:3rem;line-height:1.35;font-weight:700;max-width:820px;margin-left:auto;margin-right:auto}
+.bridge-row{display:flex;gap:3rem;justify-content:center;align-items:center;margin-top:4.5rem;flex-wrap:wrap}
+.bnode{text-align:center}
+.bnode-l{opacity:.3;font-size:.68rem;letter-spacing:2.5px;margin-bottom:.4rem}
+.bnode-v{font-family:var(--fh);font-size:clamp(1.4rem,3.5vw,2rem);font-weight:900}
+.barrow{font-size:2rem;opacity:.18;color:#fff}
+
+/* Journey */
+#journey{padding:8rem 1.5rem;max-width:1020px;margin:0 auto}
+.j-title{text-align:center;margin-bottom:7rem}
+.sec-title{font-family:var(--fh);font-size:clamp(2.5rem,6vw,5.5rem);font-weight:950;letter-spacing:-.05em;line-height:.88;background:linear-gradient(180deg,#fff,rgba(255,255,255,.45));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.j-track{position:relative;padding-left:2.5rem}
+.j-spine{position:absolute;left:.6rem;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,rgba(255,255,255,.04),rgba(255,255,255,.25),rgba(255,255,255,.04))}
+.j-item{display:flex;gap:2.5rem;align-items:flex-start;padding:3rem 0;position:relative;opacity:0;transform:translateY(40px);transition:opacity .85s cubic-bezier(.16,1,.3,1),transform .85s cubic-bezier(.16,1,.3,1)}
+.j-item.on{opacity:1;transform:none}
+.j-node{position:absolute;left:-2.75rem;top:3.3rem;width:1.6rem;height:1.6rem;border-radius:50%;background:rgba(99,102,241,.12);border:1.5px solid rgba(99,102,241,.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 16px rgba(99,102,241,.25)}
+.j-dot{width:5px;height:5px;border-radius:50%;background:var(--accent)}
+.j-icon{width:3.5rem;height:3.5rem;flex-shrink:0;border-radius:50%;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.7);font-size:1.2rem}
+.j-icon.final{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.4);color:#fff;box-shadow:0 0 30px rgba(255,255,255,.15)}
+.j-body{}
+.j-act{font-size:.7rem;font-weight:800;letter-spacing:3.5px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.7rem}
+.j-head{font-family:var(--fh);font-size:clamp(2rem,4.5vw,3.5rem);font-weight:900;letter-spacing:-.04em;color:#fff;margin-bottom:1rem;line-height:1}
+.j-desc{color:rgba(255,255,255,.45);font-size:clamp(1rem,1.8vw,1.3rem);line-height:1.6;max-width:580px}
+
+/* MVP Flow */
+#mvp{padding:8rem 1.5rem;text-align:center}
+.mvp-title{margin-bottom:3rem}
+.mvp-sub{color:#a1a1aa;font-size:1.05rem;margin-top:1rem;line-height:1.5;max-width:580px;margin-left:auto;margin-right:auto}
+.mvp-canvas{width:100%;max-width:820px;height:420px;margin:0 auto;position:relative;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);border-radius:28px;overflow:hidden;touch-action:none}
+@media(max-width:600px){.mvp-canvas{height:300px}}
+/* Confetti canvas */
+#confetti-cv{position:fixed;inset:0;pointer-events:none;z-index:99000;opacity:0;transition:opacity .4s}
+#confetti-cv.show{opacity:1}
+.mvp-grid{position:absolute;inset:0;opacity:.04;background:radial-gradient(circle,#fff 1px,transparent 1px) 0 0 / 22px 22px;border-radius:28px}
+.mvp-node{position:absolute;transform:translate(-50%,-50%);z-index:10;cursor:pointer;touch-action:none}
+.mn-circle{width:22px;height:22px;border-radius:50%;background:#1e1e2e;border:2.5px solid #3f3f46;transition:background .25s,border-color .25s,transform .25s;position:relative;display:flex;align-items:center;justify-content:center}
+.mn-circle.reached{background:#fff;border-color:#a1a1aa;transform:scale(1.3)}
+.mn-label{position:absolute;top:28px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:.6rem;font-weight:800;letter-spacing:.5px;color:#52525b;transition:color .25s;font-family:var(--fb)}
+.mn-circle.reached + .mn-label{color:#fff}
+.mvp-badge{margin-top:2.5rem;display:flex;flex-direction:column;align-items:center;gap:1rem;animation:fadeUp .6s both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+/* Countdown */
+#countdown{padding:8rem 1.5rem;text-align:center;position:relative;overflow:hidden}
+.cd-glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(99,102,241,.07) 0%,transparent 70%);pointer-events:none;animation:gp 4s ease-in-out infinite}
+@keyframes gp{0%,100%{opacity:.5}50%{opacity:1}}
+.cd-digits{display:flex;gap:clamp(.8rem,3.5vw,3rem);justify-content:center;margin-top:3rem}
+.cd-unit{display:flex;flex-direction:column;align-items:center;min-width:70px}
+.cd-val{font-family:var(--fh);font-size:clamp(2.2rem,6vw,4.5rem);font-weight:900;letter-spacing:-2px;color:#fff;text-shadow:0 0 40px rgba(99,102,241,.5);transition:all .15s ease}
+.cd-lbl{font-size:.65rem;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-top:.25rem;opacity:.8}
+.cd-col{font-family:var(--fh);font-size:clamp(1.8rem,5vw,3.8rem);font-weight:900;color:rgba(255,255,255,.12);align-self:flex-start;margin-top:.1rem;padding:0 .25rem}
+
+/* Founders */
+#founders{padding:8rem 1.5rem;text-align:center}
+.f-quote{font-family:var(--fh);font-size:clamp(1.15rem,2.8vw,2rem);font-weight:400;max-width:860px;margin:0 auto 5rem;line-height:1.45;color:rgba(255,255,255,.65)}
+.f-quote em{color:#fff;font-style:italic}
+.f-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;max-width:760px;margin:0 auto}
+.fc{border-radius:20px;overflow:hidden;background:var(--glass);border:1px solid var(--gb);transition:all .4s cubic-bezier(.25,.8,.25,1);cursor:default}
+.fc:hover{transform:translateY(-5px);border-color:rgba(255,255,255,.14);box-shadow:0 28px 56px rgba(0,0,0,.5)}
+.fc-img{position:relative;aspect-ratio:1;overflow:hidden}
+.fc-img img{width:100%;height:100%;object-fit:cover;transition:transform .5s;filter:grayscale(15%)}
+.fc:hover .fc-img img{transform:scale(1.04)}
+.fc-grad{position:absolute;inset:0;background:linear-gradient(to top,rgba(6,6,8,.92) 0%,rgba(6,6,8,.35) 50%,transparent 100%)}
+.fc-info{padding:1.4rem;text-align:left}
+.fc-name{font-family:var(--fh);font-size:1.2rem;font-weight:800;letter-spacing:-.4px}
+.fc-role{font-size:.82rem;color:var(--muted);margin-top:.2rem}
+.fc-bio{padding:1.2rem 1.4rem;border-top:1px solid var(--gb);display:flex;flex-direction:column;gap:.4rem}
+.fc-pt{font-size:.82rem;color:rgba(255,255,255,.45);line-height:1.5}
+.li-btn{display:inline-flex;align-items:center;gap:.45rem;margin-top:.8rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:.45rem 1.1rem;font-size:.75rem;font-weight:700;color:#fff;text-decoration:none;transition:all .2s;letter-spacing:.4px}
+.li-btn:hover{background:rgba(255,255,255,.1)}
+
+/* ─── Mobile ─── */
+@media(max-width:480px){
+  nav{padding:.9rem 1.2rem}
+  .logo{font-size:1.1rem}
+  .nav-btn{padding:.45rem 1rem;font-size:.75rem}
+  #pill{bottom:1.2rem;gap:.2rem;padding:.25rem}
+  .pb{padding:.6rem .9rem;font-size:.7rem;gap:.4rem;letter-spacing:.5px}
+  .pb svg{width:11px;height:11px}
+  #hero{padding:6rem 1.2rem 4rem}
+  .hero-wm{letter-spacing:-3px}
+  .cta-row{flex-direction:column;align-items:center;gap:.75rem}
+  .btn{padding:.85rem 2rem;font-size:.9rem;width:100%;max-width:320px;justify-content:center}
+  .probs{gap:5rem;padding-top:5rem}
+  .prob.r{align-items:flex-start;text-align:left}
+  .prob-inner{padding:1.5rem}
+  .bridge{padding:7rem 1.2rem}
+  #journey{padding:5rem 1.2rem}
+  .j-title{margin-bottom:4rem}
+  .j-track{padding-left:2rem}
+  .j-item{gap:1.2rem;padding:2rem 0}
+  .j-node{left:-2.2rem;top:2.5rem;width:1.4rem;height:1.4rem}
+  .j-icon{width:2.8rem;height:2.8rem;flex-shrink:0}
+  .j-head{font-size:clamp(1.6rem,8vw,2.8rem)}
+  #mvp{padding:5rem 1.2rem}
+  .mvp-sub{font-size:.9rem}
+  #countdown{padding:5rem 1.2rem}
+  .cd-unit{min-width:52px}
+  #founders{padding:5rem 1.2rem}
+  .f-quote{font-size:1.1rem;margin-bottom:3rem}
+  .f-grid{grid-template-columns:1fr}
+  .result-pill{font-size:.95rem;padding:.7rem 1.4rem}
+  .mf-sub{font-size:1.05rem}
+  #sb-prog{display:none!important}
+  .ch{padding:4.5rem 1.2rem}
+  .ch1-grid{grid-template-columns:1fr;gap:2.5rem}
+  .tgrid{grid-template-columns:1fr}
+  .psy-grid{grid-template-columns:1fr;gap:2.5rem}
+  .ch4-grid{grid-template-columns:1fr;gap:2.5rem}
+  .epi-layout{grid-template-columns:1fr;gap:2rem}
+  .wheel-wrap{width:260px;height:260px}
+  .g-grid{grid-template-columns:1fr 1fr;gap:.6rem}
+  .g-grid .gi:first-child{grid-column:span 2;grid-row:span 1}
+  .gi img{min-height:130px}
+  .th-wm{letter-spacing:-2px}
+  .sec-title{font-size:clamp(2rem,10vw,4rem)}
+  .ch-title{font-size:clamp(1.8rem,7vw,3.5rem)}
+}
+/* Footer */
+footer{position:relative;z-index:2;padding:3.5rem 1.5rem;border-top:1px solid var(--gb);text-align:center}
+.f-logo{font-family:var(--fh);font-size:1.15rem;font-weight:900;background:linear-gradient(to right,#a5b4fc,#c4b5fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.f-copy{color:#3f3f46;font-size:.82rem;margin-top:.8rem}
+
+/* ─────────── SIDE B ─────────── */
+#sb-prog{position:fixed;left:1.5rem;top:50%;transform:translateY(-50%);z-index:7500;display:none;flex-direction:column;gap:.65rem}
+#sb-prog.show{display:flex}
+.sp{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;transition:all .3s}
+.sp.on{background:var(--gold);box-shadow:0 0 10px var(--gold-glow);height:18px;border-radius:3px}
+
+#th-hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:7rem 1.5rem 5rem;text-align:center}
+.th-wm{font-size:clamp(3.5rem,11vw,9rem);font-weight:900;letter-spacing:-4px;line-height:.88}
+.th-div{width:56px;height:1.5px;background:var(--gold);margin:3rem auto}
+.th-p{max-width:680px;margin:0 auto;font-size:clamp(1rem,2.2vw,1.5rem);color:rgba(255,255,255,.65);line-height:1.55;font-weight:500}
+.th-scroll{margin-top:5rem;color:rgba(255,255,255,.18);font-size:.68rem;letter-spacing:3px}
+
+/* Tiles for Side B */
+.tile{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:2.2rem;cursor:pointer;transition:all .35s cubic-bezier(.25,.8,.25,1);position:relative;overflow:hidden;-webkit-user-select:none;user-select:none}
+.tile::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%,rgba(212,175,55,.07) 0%,transparent 60%);opacity:0;transition:opacity .35s}
+.tile:hover::before,.tile.exp::before{opacity:1}
+.tile:hover{border-color:rgba(212,175,55,.2);transform:translateY(-3px);box-shadow:0 18px 48px rgba(0,0,0,.45)}
+.tile-id{font-size:.72rem;font-weight:900;color:rgba(212,175,55,.35);letter-spacing:2px;margin-bottom:1rem}
+.tile-t{font-family:var(--fh);font-size:1.35rem;font-weight:800;letter-spacing:-.4px;margin-bottom:.7rem}
+.tile-d{color:rgba(255,255,255,.5);line-height:1.6;font-size:.92rem}
+.tile-deep{margin-top:1.3rem;padding-top:1.3rem;border-top:1px solid rgba(255,255,255,.05);color:rgba(212,175,55,.65);font-size:.86rem;line-height:1.55;max-height:0;overflow:hidden;opacity:0;transition:max-height .4s,opacity .4s}
+.tile.exp .tile-deep{max-height:200px;opacity:1}
+.tile-r{margin-top:1rem;font-size:.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.18)}
+
+/* Red tile variant */
+.tile.red::before{background:radial-gradient(circle at 50% 0%,rgba(235,68,50,.07) 0%,transparent 60%)}
+.tile.red:hover{border-color:rgba(235,68,50,.25)}
+
+/* Chapter sections */
+.ch{padding:7rem 1.5rem;max-width:1100px;margin:0 auto}
+.ch-header{text-align:center;margin-bottom:4.5rem}
+.ch-title{font-family:var(--fh);font-size:clamp(2.2rem,5.5vw,4.5rem);font-weight:900;letter-spacing:-.04em;line-height:.9;margin-top:.8rem}
+.ch-title .g{color:var(--gold)}
+.ch-title .r{color:var(--red)}
+.ch-sub{color:rgba(255,255,255,.45);font-size:clamp(.95rem,1.8vw,1.15rem);margin-top:1.5rem;max-width:600px;margin-left:auto;margin-right:auto;line-height:1.6}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.8rem}
+
+/* Ch1 layout */
+.ch1-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
+.ch1-intro .r-label{color:var(--red)}
+.ch1-intro p{color:rgba(255,255,255,.55);font-size:1.05rem;margin-top:1.5rem;line-height:1.65;max-width:380px}
+@media(max-width:768px){.ch1-grid{grid-template-columns:1fr;gap:3rem}}
+
+/* Psychology */
+#psychology{padding:7rem 1.5rem;max-width:1100px;margin:0 auto}
+.psy-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:5rem;align-items:center}
+@media(max-width:768px){.psy-grid{grid-template-columns:1fr;gap:3.5rem}}
+.psy-orb{position:relative;aspect-ratio:1;background:radial-gradient(circle at center,rgba(212,175,55,.07) 0%,transparent 70%);border-radius:50%;display:flex;align-items:center;justify-content:center;max-width:380px;margin:0 auto}
+.psy-ring{width:clamp(150px,30vw,210px);height:clamp(150px,30vw,210px);border:1px solid rgba(212,175,55,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative;background:rgba(212,175,55,.02)}
+.psy-ring-pulse{position:absolute;inset:-18px;border:1px solid rgba(212,175,55,.12);border-radius:50%;animation:pulse 5s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:.2}50%{transform:scale(1.12);opacity:.5}}
+.psy-ego{font-family:var(--fh);font-size:2rem;font-weight:900;color:var(--gold);letter-spacing:4px}
+.psy-orb-lbl{position:absolute;font-size:.6rem;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:rgba(212,175,55,.45)}
+.psy-t .block-quote{border-left:3px solid var(--gold);padding-left:2rem;margin-top:2rem;background:linear-gradient(to right,rgba(212,175,55,.04),transparent)}
+.psy-t .bq-text{color:var(--gold);font-weight:800;font-size:1.15rem;font-style:italic;line-height:1.45}
+@media(max-width:768px){.psy-t .block-quote{border-left:none;border-top:3px solid var(--gold);padding:1.5rem 0 0;background:linear-gradient(to bottom,rgba(212,175,55,.04),transparent)}}
+
+/* Ch4 Science */
+#ch4{padding:7rem 1.5rem;max-width:1100px;margin:0 auto}
+.ch4-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:4.5rem;align-items:start}
+@media(max-width:768px){.ch4-grid{grid-template-columns:1fr;gap:3rem}}
+.shift-box{background:rgba(255,255,255,.02);border:1px solid rgba(212,175,55,.18);border-radius:36px;padding:clamp(2rem,5vw,3.5rem);display:flex;flex-direction:column;gap:2rem}
+.shift-item{text-align:center}
+.shift-item.dim{opacity:.35}
+.shift-label{font-size:.7rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:.5rem}
+.shift-text{font-size:1.15rem;font-weight:600;font-style:italic;line-height:1.35}
+.shift-divider{width:1px;height:36px;background:var(--gold);opacity:.25;margin:0 auto}
+.shift-bottom{border-top:1px solid rgba(255,255,255,.05);padding-top:2rem;display:flex;gap:2rem}
+.shift-stat{flex:1;font-size:.82rem;color:rgba(255,255,255,.45);line-height:1.5}
+.shift-stat svg{color:var(--gold);margin-bottom:.6rem}
+
+/* Epilogue wheel */
+#epilogue{padding:7rem 1.5rem;max-width:1100px;margin:0 auto}
+.epi-layout{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;margin-top:4rem}
+@media(max-width:768px){.epi-layout{grid-template-columns:1fr;gap:2rem}}
+.wheel-wrap{position:relative;width:clamp(260px,40vw,440px);height:clamp(260px,40vw,440px);margin:0 auto}
+.wheel-center-glow{position:absolute;inset:20%;background:radial-gradient(circle,rgba(212,175,55,.12) 0%,transparent 70%);filter:blur(30px);border-radius:50%}
+.wheel-ring{position:absolute;inset:12%;border:2px dashed rgba(212,175,55,.08);border-radius:50%;pointer-events:none}
+.w-seg{position:absolute;top:50%;left:50%;width:44%;height:90px;transform-origin:0 50%;cursor:pointer;z-index:2}
+.w-seg-inner{width:100%;height:100%;border-radius:18px;border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:rgba(255,255,255,.025);transition:all .3s;box-shadow:none}
+.w-seg.act .w-seg-inner{background:rgba(212,175,55,.12);border-color:var(--gold);box-shadow:0 0 28px rgba(212,175,55,.18);transform:translateX(16px) scale(1.08)}
+.epi-panel{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.08);border-radius:32px;padding:2.5rem;min-height:320px;display:flex;flex-direction:column;justify-content:center;cursor:pointer;-webkit-user-select:none;user-select:none;position:relative;overflow:hidden;transition:border-color .3s}
+.epi-panel:hover{border-color:rgba(212,175,55,.2)}
+.epi-icon{color:var(--gold);margin-bottom:1.2rem;opacity:.8;display:flex}
+.epi-name{font-family:var(--fh);font-size:1.7rem;font-weight:900;letter-spacing:-.8px;margin-bottom:.8rem}
+.epi-desc{color:rgba(255,255,255,.48);font-size:.98rem;line-height:1.6;margin-bottom:1.5rem}
+.epi-hint{font-size:.65rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:rgba(212,175,55,.5)}
+.epi-reveal{position:absolute;inset:0;background:rgba(0,0,0,.94);padding:2.5rem;display:flex;flex-direction:column;justify-content:center;z-index:10;opacity:0;pointer-events:none;transition:opacity .3s;border-radius:32px}
+.epi-reveal.on{opacity:1;pointer-events:auto}
+.epi-rev-l{font-size:.7rem;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--gold);opacity:.7;margin-bottom:1.2rem}
+.epi-rev-t{color:#fff;font-size:1.1rem;line-height:1.55}
+
+/* Gallery */
+#gallery{padding:6rem 1.5rem 10rem}
+.g-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.9rem;max-width:1100px;margin:2.5rem auto 0}
+.g-grid .gi:first-child{grid-column:span 2;grid-row:span 2}
+.gi{border-radius:14px;overflow:hidden;cursor:pointer;transition:transform .4s cubic-bezier(.25,.8,.25,1)}
+.gi:hover{transform:scale(1.02)}
+.gi img{width:100%;height:100%;object-fit:cover;display:block;min-height:160px}
+@media(max-width:600px){.g-grid{grid-template-columns:1fr 1fr}.g-grid .gi:first-child{grid-column:span 2;grid-row:span 1}}
+
+/* Waitlist modal */
+#wl-modal{position:fixed;inset:0;z-index:99980;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.8);backdrop-filter:blur(12px);padding:1.5rem}
+#wl-modal.open{display:flex}
+.wl-box{background:#111;border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:2.8rem;max-width:460px;width:100%;text-align:center;box-shadow:0 40px 80px rgba(0,0,0,.8);position:relative}
+.wl-title{font-family:var(--fh);font-size:1.9rem;font-weight:900;letter-spacing:-1px;margin-bottom:.4rem}
+.wl-sub{color:var(--muted);font-size:.9rem;margin-bottom:2rem;line-height:1.5}
+.wl-in{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:11px;padding:.85rem 1.15rem;color:#fff;font-size:.98rem;outline:none;margin-bottom:.8rem;font-family:var(--fb);transition:border-color .2s}
+.wl-in:focus{border-color:rgba(99,102,241,.5)}
+.wl-in::placeholder{color:#52525b}
+.wl-sub-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:11px;padding:.95rem;font-size:.98rem;font-weight:700;font-family:var(--fh);cursor:pointer;letter-spacing:.4px;transition:all .2s}
+.wl-sub-btn:hover{background:#4f46e5;transform:translateY(-1px)}
+.wl-close{position:absolute;top:1.3rem;right:1.3rem;background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer;line-height:1}
+.wl-msg{margin-top:.9rem;font-size:.82rem;min-height:1.2em;color:var(--accent)}
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<!-- Portal overlay -->
+<div id="portal"></div>
+
+<!-- Ambient layers -->
+<div class="mesh"></div>
+<div class="grain"></div>
+<canvas id="tc"></canvas>
+
+<!-- Nav -->
+<nav id="nav">
+  <div class="logo">CROSSOUL</div>
+  <button class="nav-btn" onclick="openWL()">Join Waitlist</button>
+</nav>
+
+<!-- Side B progress -->
+<div id="sb-prog">
+  <div class="sp on" onclick="goTo('th-hero')" title="Vision"></div>
+  <div class="sp" onclick="goTo('ch1')" title="Dead End"></div>
+  <div class="sp" onclick="goTo('ch2')" title="Resonance"></div>
+  <div class="sp" onclick="goTo('psychology')" title="Psychology"></div>
+  <div class="sp" onclick="goTo('ch4')" title="Recognition"></div>
+  <div class="sp" onclick="goTo('epilogue')" title="Epilogue"></div>
+  <div class="sp" onclick="goTo('gallery')" title="Gallery"></div>
+</div>
+
+<!-- Toggle pill -->
+<div id="pill">
+  <button class="pb digi" id="pb-a" onclick="switchSide('a')">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+    DIGITAL
+  </button>
+  <button class="pb dim" id="pb-b" onclick="switchSide('b')">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    THREAD OF THOUGHTS
+  </button>
+</div>
+
+<!-- ══════════ SIDE A ══════════ -->
+<div id="sa">
+
+  <section id="hero">
+    <div style="display:flex;align-items:baseline;gap:.25em;flex-wrap:wrap;justify-content:center">
+      <span class="hero-wm wm" id="hwm">CROSSOUL</span>
+      <span class="hero-for">for</span>
+    </div>
+    <div class="hero-rot" id="hrot">students.</div>
+    <p class="hero-sub">Build your ecosystem. Meet your tribe. Go offline.</p>
+    <div class="cta-row">
+      <button class="btn btn-w" onclick="openWL()" style="display:inline-flex;align-items:center;gap:.5rem">Join Waitlist <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+      <button class="btn btn-o" onclick="switchSide('b')">Thread of Thoughts</button>
+    </div>
+    <div class="scroll-hint"><div class="sh-line"></div><span>scroll</span></div>
+  </section>
+
+  <section id="manifesto">
+    <div class="mf-center fiu">
+      <span class="kicker a" style="color: rgb(138, 140, 247)">The Vision</span>
+      <div class="mf-big wm">THE BIG ONE.</div>
+      <p class="mf-sub">Students don't have a safe, campus-level space to express and connect. Reddit is anonymous. LinkedIn is formal. There is no middle ground.</p>
+      <div class="result-pill">Result: No true "campus voice."</div>
+    </div>
+
+    <div class="probs" id="probs"></div>
+
+    <div class="bridge fiu">
+      <span class="kicker a">The Final Insight</span>
+      <div class="bridge-big wm">THE BRIDGE.</div>
+      <p class="bridge-sub">Bridging the gap between a conversation on a phone and an experience in the real world.</p>
+      <div class="bridge-row">
+        <div class="bnode"><div class="bnode-l">FROM</div><div class="bnode-v" style="color:#fff">DIGITAL</div></div>
+        <div class="barrow">→</div>
+        <div class="bnode"><div class="bnode-l">TO</div><div class="bnode-v" style="color:var(--accent)">PHYSICAL</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="journey">
+    <div class="j-title fiu">
+      <span class="kicker a">The Architecture of Trust</span>
+      <div class="sec-title">THE SEQUENCE.</div>
+    </div>
+    <div class="j-track">
+      <div class="j-spine"></div>
+      <div id="jrows"></div>
+    </div>
+  </section>
+
+  <section id="mvp">
+    <div class="mvp-title fiu">
+      <span class="kicker a">Interactive Challenge</span>
+      <div class="sec-title" id="mvp-heading">MISSION: BUILD YOUR MVP</div>
+      <p class="mvp-sub">Drag from <strong style="color:#fff">IDEA</strong> through each stage in order. Skip a step and face the consequences.</p>
+    </div>
+    <div class="mvp-canvas" id="mvp-canvas">
+      <div class="mvp-grid"></div>
+      <svg id="mvp-svg" viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none"></svg>
+    </div>
+    <div class="mvp-badge" id="mvp-badge" style="display:none">
+      <button class="btn btn-w" onclick="openWL()" style="display:inline-flex;align-items:center;gap:.5rem">JOIN THE MOVEMENT <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+      <p style="color:#a1a1aa;font-size:.88rem;font-style:italic">"Access Granted. Welcome to the Crossoul Inner Circle."</p>
+    </div>
+  </section>
+
+  <section id="countdown">
+    <div class="cd-glow"></div>
+    <div class="fiu">
+      <span class="kicker a">Founder Admittance</span>
+      <div class="sec-title">THE FINAL<br/>COUNTDOWN.</div>
+    </div>
+    <div class="cd-digits">
+      <div class="cd-unit"><div class="cd-val" id="cd-d">00</div><div class="cd-lbl">Days</div></div>
+      <div class="cd-col">:</div>
+      <div class="cd-unit"><div class="cd-val" id="cd-h">00</div><div class="cd-lbl">Hours</div></div>
+      <div class="cd-col">:</div>
+      <div class="cd-unit"><div class="cd-val" id="cd-m">00</div><div class="cd-lbl">Mins</div></div>
+      <div class="cd-col">:</div>
+      <div class="cd-unit"><div class="cd-val" id="cd-s">00</div><div class="cd-lbl">Secs</div></div>
+    </div>
+    <div style="margin-top:3rem">
+      <button class="btn btn-w" onclick="openWL()" style="display:inline-flex;align-items:center;gap:.5rem">Secure Your Spot <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+    </div>
+  </section>
+
+  <section id="founders">
+    <div class="fiu">
+      <span class="kicker a">The Pulse Behind the Movement</span>
+      <div class="sec-title" style="margin-bottom:2.5rem">THE FOUNDERS.</div>
+      <p class="f-quote">"We built this because <em>we were these students.</em> Sitting in a tier-2 city, with things to say and nowhere to say them. Crossoul is the platform we needed and nobody built. <em>So we did.</em>"</p>
+    </div>
+    <div class="f-grid">
+      <div class="fc">
+        <div class="fc-img"><img src="assets/ceo.jpg" alt="Kishan Kasula" loading="lazy"/><div class="fc-grad"></div></div>
+        <div class="fc-info"><div class="fc-name">Kishan Kasula</div><div class="fc-role">CEO & Founder</div></div>
+        <div class="fc-bio">
+          <div class="fc-pt">→ Founder of CROSSOUL</div>
+          <div class="fc-pt">→ Visionary behind the Ecosystem</div>
+          <a class="li-btn" href="https://www.linkedin.com/in/kishankasula" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            LinkedIn
+          </a>
+        </div>
+      </div>
+      <div class="fc">
+        <div class="fc-img"><img src="assets/cto.jpg" alt="Aditya Vungarala" loading="lazy"/><div class="fc-grad"></div></div>
+        <div class="fc-info"><div class="fc-name">Aditya Phanidar Vungarala</div><div class="fc-role">CTO & Co-Founder</div></div>
+        <div class="fc-bio">
+          <div class="fc-pt">→ Co-Founder of CROSSOUL</div>
+          <div class="fc-pt">→ Head of Engineering & Tech Architecture</div>
+          <a class="li-btn" href="https://www.linkedin.com/in/aditya-vungarala-813163291" target="_blank" rel="noopener">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            LinkedIn
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /sa -->
+
+<!-- ══════════ SIDE B ══════════ -->
+<div id="sb" style="display:none">
+
+  <section id="th-hero" data-sl="01 Vision">
+    <span class="kicker g fiu" style="letter-spacing:6px">Thread of Thoughts — The Manifesto</span>
+    <div class="th-wm wm-gold fiu">A New Model<br/>for <em style="font-style:italic;font-weight:400">Idea Evolution.</em></div>
+    <div class="th-div fiu"></div>
+    <p class="th-p fiu">Crossoul is built on a simple but powerful belief:<br/><span style="color:#fff">Ideas grow better through collective thinking than through competitive judgment.</span></p>
+    <div style="margin-top:3rem" class="fiu">
+      <button class="btn btn-g" onclick="openWL()">Enter the Circle</button>
+    </div>
+    <div class="th-scroll fiu">SCROLL TO UNLOCK THE VISION</div>
+    <div class="scroll-hint" style="color:var(--gold)"><div class="sh-line"></div><span>explore</span></div>
+  </section>
+
+  <!-- Chapter I -->
+  <div class="ch" id="ch1" data-sl="02 Dead End">
+    <div class="ch1-grid">
+      <div class="ch1-intro fiu">
+        <span class="kicker r">Chapter I</span>
+        <div class="ch-title">The <span class="r">Dead End</span><br/>of Competition.</div>
+        <p style="color:rgba(255,255,255,.55);font-size:1.05rem;margin-top:1.5rem;line-height:1.65;max-width:380px">Traditional ideathons focus more on winning than on improving ideas. They create a system where potentially strong thoughts are overlooked.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1.5rem" id="ch1-tiles"></div>
+    </div>
+  </div>
+
+  <!-- Chapter II -->
+  <div class="ch" id="ch2" data-sl="03 Resonance">
+    <div class="ch-header fiu">
+      <span class="kicker g">Chapter II</span>
+      <div class="ch-title">The Protocol of <span class="g">Resonance</span>.</div>
+      <p class="ch-sub">Crossoul removes centralized authority and replaces it with collective intelligence.</p>
+    </div>
+    <div class="tgrid" id="ch2-tiles"></div>
+  </div>
+
+  <!-- Chapter III -->
+  <section id="psychology" data-sl="04 Psychology">
+    <div class="ch">
+      <div class="ch-header fiu">
+        <span class="kicker g">Chapter III</span>
+        <div class="ch-title">Channeling the <span class="g" style="font-style:italic;font-weight:400">Human Drive.</span></div>
+      </div>
+      <div class="psy-grid">
+        <div class="psy-orb fiu">
+          <div class="psy-ring">
+            <div class="psy-ring-pulse"></div>
+            <div class="psy-ego">EGO</div>
+            <div class="psy-orb-lbl" style="top:-14%;left:50%;transform:translateX(-50%)">EXPRESSION</div>
+            <div class="psy-orb-lbl" style="bottom:-14%;left:50%;transform:translateX(-50%)">BELONGING</div>
+          </div>
+        </div>
+        <div class="psy-t fiu">
+          <p style="color:rgba(255,255,255,.8);font-size:clamp(1rem,1.8vw,1.3rem);line-height:1.6">Crossoul leverages two key human tendencies: <span style="color:var(--gold)">the desire to stand out</span> and <span style="color:var(--gold)">the desire to belong</span>.</p>
+          <p style="color:rgba(255,255,255,.48);font-size:1rem;line-height:1.7;margin-top:1.5rem">Instead of letting ego create competition, Crossoul channels it into thoughtful feedback and meaningful participation.</p>
+          <div class="block-quote">
+            <p class="bq-text">"Motivation is shifted from simply speaking — to adding insight."</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chapter IV -->
+  <div class="ch" id="ch4" data-sl="05 Recognition">
+    <div class="ch4-grid">
+      <div class="fiu">
+        <span class="kicker g">Chapter IV</span>
+        <div class="ch-title">The Science of <span class="g">Recognition</span>.</div>
+        <p style="color:rgba(255,255,255,.5);font-size:1.05rem;margin-top:1.5rem;line-height:1.65;max-width:440px">At the end of each session, the evolution of an idea is made tangible through two formal sheets.</p>
+        <div style="display:flex;flex-direction:column;gap:1.5rem;margin-top:3rem" id="ch4-tiles"></div>
+      </div>
+      <div class="shift-box fiu">
+        <div class="shift-item dim">
+          <div class="shift-label" style="color:rgba(255,255,255,.35)">Traditional</div>
+          <div class="shift-text" style="color:rgba(255,255,255,.5)">"Who deserves to win?"</div>
+        </div>
+        <div class="shift-divider"></div>
+        <div class="shift-item">
+          <div class="shift-label" style="color:var(--gold)">Crossoul</div>
+          <div class="shift-text" style="color:#fff;font-size:1.4rem;font-family:var(--fh);font-weight:900;letter-spacing:-1px">"How can every idea reach its highest potential?"</div>
+        </div>
+        <div class="shift-bottom">
+          <div class="shift-stat">
+            <div style="color:var(--gold);margin-bottom:.6rem"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+            <div>Improved Ideas &amp; Collaborative Networks</div>
+          </div>
+          <div class="shift-stat">
+            <div style="color:var(--gold);margin-bottom:.6rem"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+            <div>Incubation Pathways &amp; Internships</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Epilogue -->
+  <div class="ch" id="epilogue" data-sl="06 Epilogue">
+    <div class="ch-header fiu">
+      <span class="kicker g">Epilogue</span>
+      <div class="ch-title">The Execution <span class="g">Bridge</span>.</div>
+      <p class="ch-sub">What happens after the circle closes.</p>
+    </div>
+    <div class="epi-layout" id="epi-layout"></div>
+  </div>
+
+  <!-- Gallery -->
+  <section id="gallery" data-sl="07 Gallery">
+    <div class="ch" style="padding-bottom:0">
+      <div class="ch-header fiu">
+        <span class="kicker g">Visual Archive</span>
+        <div class="ch-title">THE CIRCLE<br/><span style="font-size:.6em;opacity:.35">in action.</span></div>
+      </div>
+      <div class="g-grid">
+        <div class="gi"><img src="assets/circle_session.png" alt="Circle Session" loading="lazy"/></div>
+        <div class="gi"><img src="assets/circle1.jpg" alt="" loading="lazy"/></div>
+        <div class="gi"><img src="assets/circle2.jpg" alt="" loading="lazy"/></div>
+        <div class="gi"><img src="assets/circle3.jpg" alt="" loading="lazy"/></div>
+        <div class="gi"><img src="assets/circle4.jpg" alt="" loading="lazy"/></div>
+        <div class="gi"><img src="assets/circle5.jpg" alt="" loading="lazy"/></div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /sb -->
+
+<footer>
+  <div class="f-logo">CROSSOUL</div>
+  <p class="f-copy">© 2026 Crossoul. All rights reserved. Collective Thinking. Real Execution.</p>
+</footer>
+
+<!-- Confetti canvas -->
+<canvas id="confetti-cv"></canvas>
+
+<!-- Waitlist modal -->
+<div id="wl-modal">
+  <div class="wl-box">
+    <button class="wl-close" onclick="closeWL()">✕</button>
+    <div style="margin-bottom:1.2rem;color:#fff"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.5-1.5 4 0 4s4-1.5 4-4M12 3c0 0-4 2-5 8l5 5c6-1 8-5 8-5L12 3z"/><circle cx="15" cy="9" r="1.5"/><path d="M3 21l4-4"/></svg></div>
+    <div class="wl-title">Join the Waitlist</div>
+    <p class="wl-sub">Be first inside Crossoul. No spam, ever.</p>
+    <input class="wl-in" id="wl-name" type="text" placeholder="Your name" autocomplete="name"/>
+    <input class="wl-in" id="wl-email" type="email" placeholder="your@email.com" autocomplete="email"/>
+    <input class="wl-in" id="wl-region" type="text" placeholder="Your city / region (e.g. Hyderabad, India)" autocomplete="address-level2"/>
+    <button class="wl-sub-btn" onclick="submitWL()" style="display:flex;align-items:center;justify-content:center;gap:.5rem">Secure My Spot <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+    <p class="wl-msg" id="wl-msg"></p>
+  </div>
+</div>
+
+<!-- Comedy error modal -->
+<div id="err-modal" style="position:fixed;inset:0;z-index:99985;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);padding:1.5rem">
+  <div style="background:linear-gradient(135deg,#1e1e2e,#09090b);padding:2.5rem;border-radius:22px;border:1px solid rgba(255,255,255,.1);text-align:center;max-width:380px;width:100%;box-shadow:0 25px 50px rgba(0,0,0,.6)">
+    <div style="margin-bottom:1rem;color:#f87171"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 15s1.5-2 4-2 4 2 4 2"/><line x1="9" y1="9" x2="9.01" y2="9" stroke-width="3"/><line x1="15" y1="9" x2="15.01" y2="9" stroke-width="3"/></svg></div>
+    <div style="font-size:1.4rem;font-weight:900;font-family:var(--fh);margin-bottom:.8rem">OOPS!</div>
+    <p id="err-msg" style="color:#a1a1aa;font-size:.98rem;line-height:1.5;margin-bottom:2rem"></p>
+    <button class="btn btn-o" onclick="closeErr()" style="padding:.7rem 2rem">LET'S DEBUG THIS</button>
+  </div>
+</div>
+
+<script type="text/babel">
+const {useState,useEffect,useRef,useCallback} = React;
+
+// ═══ DATA ═══════════════════════════════════════════════
+
+const PROBLEMS = [
+  {kicker:'Problem 1',title:'Lack of Freedom of Expression.',desc:'Students fear college authorities and peer judgment. With no safe space to talk openly, opinions are suppressed and discussions never happen.',solution:'A semi-private campus space where students can speak freely.',r:false},
+  {kicker:'Problem 2',title:'Fragmented Communities.',desc:'Students are scattered across WhatsApp groups, Instagram, and random chats. No central hub means no unified community and no discoverability.',solution:'A single digital campus where everyone is discoverable.',r:true},
+  {kicker:'Problem 3',title:'Weak Real Connections.',desc:'Students interact online but rarely meet offline. Platforms keep everything digital, leading to shallow connections with no real friendships.',solution:'Turning online interactions into real-life meetups.',r:false},
+  {kicker:'Problem 4',title:'Awkward Networking.',desc:'Meeting new people is awkward and no platform organises it organically. Students don\'t know where to go or how to meet.',solution:'A natural, interest-based way to meet people.',r:true},
+  {kicker:'Problem 5',title:'Missed Opportunities.',desc:'Students and entrepreneurs struggle to find co-founders, collaborators, and opportunities. Everything is random and luck-based.',solution:'A network where opportunities emerge from conversations.',r:false},
+  {kicker:'Problem 6',title:'Digital-Physical Divide.',desc:'Social apps are online only, business apps are transactional. No connection between digital conversations and real-world actions.',solution:'The bridge between online communities and offline experiences.',r:true},
+];
+
+const JOURNEY=[
+  {act:'ACT I',title:'THE ENTRY.',icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>',final:false,desc:'A sealed perimeter. You search. You join. You are now inside the digital college space.'},
+  {act:'ACT II',title:'THE CORE.',icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/></svg>',final:false,desc:'Thoughts are posted. Friction happens. In the noise, micro-groups begin to form.'},
+  {act:'ACT III',title:'THE NETWORK.',icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',final:false,desc:'The content fades into the background. Pure relationships start to take over.'},
+  {act:'ACT IV',title:'THE TRIGGER.',icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',final:true,desc:'The digital illusion shatters. The network demands to meet in the real world.'},
+];
+
+const CH1=[
+  {id:'01',title:'The Recognition Trap',desc:'Hundreds of participants compete, but only a few are recognized. Potential is often lost in the noise.',deep:'When 90% of ideas are discarded at the gates, ecosystems lose their most diverse innovations. Crossoul ensures no thought is left behind.'},
+  {id:'02',title:'Performance Anxiety',desc:'Strict time limits create pressure, making participants nervous and hiding their best ideas.',deep:'Brilliant thinkers are often silenced by the stage. We remove the performance and focus entirely on the logic of the thought itself.'},
+  {id:'03',title:'The Panel Bias',desc:'A small panel of judges decides outcomes, influenced by subjective factors, perspective, and bias.',deep:'No small group can mirror the wisdom of the crowd. We replace singular judgment with collective resonance.'},
+];
+
+const CH2=[
+  {icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',title:'Focused Groups',desc:'Around 20 participants ensure meaningful interaction and diversity without the noise of a crowd.',deep:'Cognitive limit research suggests 20 is the sweet spot for deep, democratic engagement where every voice is audible.'},
+  {icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 0 1 5 5c0 1.5-.6 2.8-1.5 3.8A5 5 0 0 1 17 15c0 2.2-1.3 4.1-3.2 5H10.2C8.3 19.1 7 17.2 7 15a5 5 0 0 1 1.5-3.6A5 5 0 0 1 7 7a5 5 0 0 1 5-5z"/><line x1="12" y1="12" x2="12" y2="17"/></svg>',title:'Zero Anxiety',desc:'Present your idea without extreme time pressure in an environment designed for clarity and openness.',deep:'By removing formal judging panels, we switch the brain from survival mode (competition) to creative mode (contribution).'},
+  {icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>',title:'The Evolution Loop',desc:'19 collective evaluators ask, challenge, and refine. Your idea evolves through 19 different perspectives.',deep:'It\'s not about validation — it\'s about refinement. Each perspective adds a new layer of resilience to your concept.'},
+];
+
+const CH4=[
+  {title:'Refined Idea Sheet',desc:'Participants rewrite their idea after incorporating 19 perspectives. Captures the before-vs-after evolution.',deep:'Serves as proof of evolution, showing exactly how a concept became more resilient through collective stress-testing.'},
+  {title:'Peer Recognition Sheet',desc:'A democratic vote for the most innovative thought. Surfaces resonance, not just "winning".',deep:'By removing centralized judging, the winner is determined by those who actually engaged with the thought.'},
+];
+
+const EPI=[
+  {icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.96 4.96 0 0 0 18 8a6 6 0 0 0-12 0c0 1.35.51 2.58 1.5 3.5.76.76 1.23 1.52 1.41 2.5"/></svg>',title:'Incubation Pathway',desc:'Selected resonant ideas are forwarded to partnered incubation cells for mentorship and potential seed funding.',deep:'Our partners include early-stage VCs and academic incubation centers that specialize in non-linear innovation.'},
+  {icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>',title:'Internship Access',desc:'Participants access exclusive internships through the Crossoul network to gain practical collaborative experience.',deep:'Work with startups and social enterprises that value collective thinking over traditional hierarchy.'},
+  {icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',title:'Collaborative Networks',desc:'Form lasting connections with peers who resonate with your vision beyond the session.',deep:'Access a private circle where the 20-Mind protocol continues to evolve your future concepts.'},
+  {icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.5-1.5 4 0 4s4-1.5 4-4M12 3c0 0-4 2-5 8l5 5c6-1 8-5 8-5L12 3z"/><circle cx="15" cy="9" r="1"/><path d="M3 21l4-4"/></svg>',title:'Execution Support',desc:'We bridge the gap between discussion and reality, helping improved ideas find their highest potential.',deep:'From POC development to market-ready refinement, the Crossoul team supports the Refined Idea Sheet journey.'},
+];
+
+const COMEDY_ERRORS=[
+  "You just tried to build a unicorn without a horn. Let's try that again.",
+  "Skipping steps? That's how we end up with 'Coming Soon' forever.",
+  "Trying to build together without a vibe check? Error 404: Synergy Not Found.",
+  "Woah! You're building a rocket with no fuel. Planning is key, buddy.",
+  "The IDEA node is lonely. Start there.",
+];
+
+const MVP_LABELS=['IDEA','PLANNING','DISCUSSION','SAME VIBE','BUILD TOGETHER'];
+
+// ═══ HELPERS ════════════════════════════════════════════
+
+function ProblemItem({p}){
+  const [holding,setH]=useState(false);
+  const t=useRef(null);
+  const start=()=>{t.current=setTimeout(()=>setH(true),280)};
+  const end=()=>{clearTimeout(t.current);setH(false)};
+  return(
+    <div className={`prob${p.r?' r':''}`}>
+      <div className="prob-inner" onMouseDown={start} onMouseUp={end} onMouseLeave={end} onTouchStart={start} onTouchEnd={end}>
+        <div className="prob-k">{p.kicker}</div>
+        <h2 className="prob-t">{p.title}</h2>
+        <p className="prob-d">{p.desc}</p>
+        <div className="prob-hint">[Hold to Reveal Solution]</div>
+        <div className={`prob-sol${holding?' on':''}`}>
+          <div className="sol-l">We Solve This</div>
+          <div className="sol-t">"{p.solution}"</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function JItems(){
+  return JOURNEY.map((j,i)=>(
+    <div key={i} className="j-item" id={`ji${i}`} style={{transitionDelay:`${i*0.12}s`}}>
+      <div className="j-node"><div className="j-dot"></div></div>
+      <div className={`j-icon${j.final?' final':''}`} dangerouslySetInnerHTML={{__html:j.icon}}></div>
+      <div className="j-body">
+        <div className="j-act">{j.act}</div>
+        <div className="j-head">{j.title}</div>
+        <p className="j-desc">{j.desc}</p>
+      </div>
+    </div>
+  ));
+}
+
+function Tile({d,red}){
+  const [exp,setExp]=useState(false);
+  return(
+    <div className={`tile${red?' red':''}${exp?' exp':''}`} onClick={()=>setExp(!exp)}>
+      {d.id&&<div className="tile-id">{d.id}</div>}
+      {d.icon&&<div style={{marginBottom:'1rem',color:'var(--gold)',opacity:.8}} dangerouslySetInnerHTML={{__html:d.icon}}></div>}
+      <div className="tile-t">{d.title}</div>
+      <div className="tile-d">{d.desc}</div>
+      <div className="tile-deep">{d.deep}</div>
+      <div className="tile-r">{exp?'▲ collapse':'▼ tap to reveal deeper insight'}</div>
+    </div>
+  );
+}
+
+function EpiSection(){
+  const [active,setActive]=useState(0);
+  const [holding,setH]=useState(false);
+  const t=useRef(null);
+  const start=()=>{t.current=setTimeout(()=>setH(true),380)};
+  const end=()=>{clearTimeout(t.current);setH(false)};
+  const a=EPI[active];
+  const angles=[0,90,180,270];
+  return(
+    <div className="epi-layout">
+      <div className="wheel-wrap">
+        <div className="wheel-center-glow"></div>
+        <div className="wheel-ring"></div>
+        {EPI.map((item,i)=>{
+          const angle=angles[i];
+          const isAct=active===i;
+          return(
+            <div key={i} className={`w-seg${isAct?' act':''}`}
+              style={{transform:`translate(-50%,-50%) rotate(${angle}deg) translate(calc(clamp(120px,18vw,200px)), -50%)`,transformOrigin:'0 50%'}}
+              onClick={()=>setActive(i)}
+            >
+              <div className="w-seg-inner" style={{transform:`rotate(-${angle}deg)`}} dangerouslySetInnerHTML={{__html:item.icon}}></div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="epi-panel" onMouseDown={start} onMouseUp={end} onMouseLeave={end} onTouchStart={start} onTouchEnd={end}>
+        <div className="epi-icon" dangerouslySetInnerHTML={{__html:a.icon}}></div>
+        <div className="epi-name">{a.title}</div>
+        <div className="epi-desc">{a.desc}</div>
+        <div className="epi-hint" style={{display:'flex',alignItems:'center',gap:'.4rem'}}>HOLD TO VISION <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+        <div className={`epi-reveal${holding?' on':''}`}>
+          <div className="epi-rev-l">Strategic Insight</div>
+          <div className="epi-rev-t">{a.deep}</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═══ MVP DRAG GAME ═══════════════════════════════════════
+
+function MVPGame(){
+  const canvasRef=useRef(null);
+  const [nodes,setNodes]=useState(()=>generateNodes());
+  const [connected,setConnected]=useState(0);
+  const [dragging,setDragging]=useState(false);
+  const [ptr,setPtr]=useState(null);
+  const [done,setDone]=useState(false);
+  const connRef=useRef(0);
+  const dragRef=useRef(false);
+  const doneRef=useRef(false);
+
+  function generateNodes(){
+    const zones=[
+      {x:18,y:22},{x:50,y:18},{x:82,y:22},
+      {x:20,y:55},{x:50,y:55},{x:80,y:55},
+      {x:20,y:82},{x:50,y:82},{x:80,y:82}
+    ];
+    const shuffled=[...zones].sort(()=>Math.random()-.5);
+    return MVP_LABELS.map((lbl,i)=>{
+      const z=shuffled[i];
+      return{id:i,x:z.x+(Math.random()-.5)*12,y:z.y+(Math.random()-.5)*12,label:lbl};
+    });
+  }
+
+  function getCoords(e){
+    const c=canvasRef.current;
+    if(!c) return null;
+    const r=c.getBoundingClientRect();
+    const src=e.touches?e.touches[0]:e;
+    return{x:((src.clientX-r.left)/r.width)*100,y:((src.clientY-r.top)/r.height)*100};
+  }
+
+  function triggerError(){
+    const msg=COMEDY_ERRORS[Math.floor(Math.random()*COMEDY_ERRORS.length)];
+    window.showErr(msg);
+    connRef.current=0; setConnected(0); dragRef.current=false; setDragging(false); setPtr(null);
+    setNodes(generateNodes());
+  }
+
+  function onDown(e,idx){
+    if(doneRef.current||window.__errOpen) return;
+    e.preventDefault();
+    if(idx!==connRef.current){triggerError();return;}
+    if(canvasRef.current) canvasRef.current.setPointerCapture&&canvasRef.current.setPointerCapture(e.pointerId);
+    const next=connRef.current+1;
+    connRef.current=next; setConnected(next);
+    dragRef.current=true; setDragging(true);
+    const n=nodes[idx];
+    setPtr({x:n.x,y:n.y});
+  }
+
+  function onMove(e){
+    if(!dragRef.current||doneRef.current) return;
+    e.preventDefault();
+    const co=getCoords(e);
+    if(!co) return;
+    setPtr(co);
+    for(const n of nodes){
+      if(n.id<connRef.current) continue;
+      const dx=co.x-n.x,dy=co.y-n.y;
+      if(Math.hypot(dx,dy)<8){
+        if(n.id===connRef.current){
+          const next=connRef.current+1;
+          connRef.current=next; setConnected(next);
+          setPtr({x:n.x,y:n.y});
+          if(next===nodes.length){
+            doneRef.current=true; setDone(true); dragRef.current=false; setDragging(false); setPtr(null);
+            setTimeout(()=>{
+              document.getElementById('mvp-heading').textContent='WE ARE INFINITE';
+              document.getElementById('mvp-badge').style.display='flex';
+            },800);
+          }
+        } else if(n.id>connRef.current){triggerError();}
+        break;
+      }
+    }
+  }
+
+  function onUp(){
+    if(dragRef.current&&!doneRef.current){
+      connRef.current=0;setConnected(0);dragRef.current=false;setDragging(false);setPtr(null);
+    }
+  }
+
+  // Build SVG polyline points
+  const pts=nodes.slice(0,connected).map(n=>`${n.x},${n.y}`);
+  if(dragging&&ptr&&!done) pts.push(`${ptr.x},${ptr.y}`);
+  const polyPts=pts.join(' ');
+
+  return(
+    <div ref={canvasRef} className="mvp-canvas" id="mvp-canvas"
+      onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}
+      style={{touchAction:'none'}}
+    >
+      <div className="mvp-grid"></div>
+      <svg viewBox="0 0 100 100" preserveAspectRatio="none" style={{position:'absolute',inset:0,width:'100%',height:'100%',pointerEvents:'none'}}>
+        {pts.length>1&&(
+          <polyline points={polyPts} stroke="#fff" strokeWidth="3.5" vectorEffect="non-scaling-stroke"
+            strokeLinejoin="round" strokeLinecap="round" fill="none"
+            style={{filter:'drop-shadow(0 0 4px rgba(255,255,255,.5))'}}/>
+        )}
+      </svg>
+      {nodes.map(n=>{
+        const reached=n.id<connected;
+        const isStart=n.id===0&&connected===0;
+        return(
+          <div key={n.id} className="mvp-node" style={{left:`${n.x}%`,top:`${n.y}%`}}
+            onPointerDown={e=>onDown(e,n.id)} style={{left:`${n.x}%`,top:`${n.y}%`}}>
+            <div className={`mn-circle${reached?' reached':''}`}>
+              {isStart&&(
+                <div style={{position:'absolute',top:'-36px',left:'50%',transform:'translateX(-50%)',background:'#fff',color:'#000',padding:'3px 8px',borderRadius:'5px',fontSize:'.55rem',fontWeight:900,whiteSpace:'nowrap'}}>
+                  START
+                  <div style={{position:'absolute',bottom:'-4px',left:'50%',transform:'translateX(-50%)',borderLeft:'4px solid transparent',borderRight:'4px solid transparent',borderTop:'4px solid #fff'}}></div>
+                </div>
+              )}
+              {(reached||(n.id===0&&connected===0))&&(
+                <div style={{position:'absolute',width:'10px',height:'10px',background:'#fff',borderRadius:'50%',filter:'blur(3px)',animation:n.id===0&&connected===0?'pulse 1.5s infinite':undefined,opacity:reached?0:.6}}></div>
+              )}
+            </div>
+            <div className="mn-label">{n.label}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ═══ MOUNT ISLANDS ════════════════════════════════════════
+
+const probsEl=document.getElementById('probs');
+if(probsEl){
+  ReactDOM.createRoot(probsEl).render(
+    React.createElement(React.Fragment,null,PROBLEMS.map((p,i)=>React.createElement(ProblemItem,{key:i,p})))
+  );
+}
+
+const jrowsEl=document.getElementById('jrows');
+if(jrowsEl) ReactDOM.createRoot(jrowsEl).render(React.createElement(JItems));
+
+const ch1El=document.getElementById('ch1-tiles');
+if(ch1El) ReactDOM.createRoot(ch1El).render(React.createElement(React.Fragment,null,CH1.map((d,i)=>React.createElement(Tile,{key:i,d,red:true}))));
+
+const ch2El=document.getElementById('ch2-tiles');
+if(ch2El) ReactDOM.createRoot(ch2El).render(React.createElement(React.Fragment,null,CH2.map((d,i)=>React.createElement(Tile,{key:i,d}))));
+
+const ch4El=document.getElementById('ch4-tiles');
+if(ch4El) ReactDOM.createRoot(ch4El).render(React.createElement(React.Fragment,null,CH4.map((d,i)=>React.createElement(Tile,{key:i,d}))));
+
+const epiEl=document.getElementById('epi-layout');
+if(epiEl) ReactDOM.createRoot(epiEl).render(React.createElement(EpiSection));
+
+// MVP — mount after canvas div exists
+const mvpSection=document.getElementById('mvp');
+if(mvpSection){
+  const wrap=document.createElement('div');
+  wrap.style.cssText='width:100%;max-width:820px;margin:0 auto';
+  const canvasDiv=document.getElementById('mvp-canvas');
+  if(canvasDiv){canvasDiv.replaceWith(wrap);ReactDOM.createRoot(wrap).render(React.createElement(MVPGame));}
+}
+
+</script>
+
+<script>
+// ═══ GLOBAL STATE ════════════════════════════════════════
+let side='a', busy=false;
+
+// ═══ CURSOR ══════════════════════════════════════════════
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+let mx=0,my=0,fx=0,fy=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'},{passive:true});
+(function tick(){fx+=(mx-fx)*.13;fy+=(my-fy)*.13;cur2.style.left=fx+'px';cur2.style.top=fy+'px';requestAnimationFrame(tick)})();
+document.addEventListener('mousedown',()=>cur.style.transform='translate(-50%,-50%) scale(.45)');
+document.addEventListener('mouseup',()=>cur.style.transform='translate(-50%,-50%) scale(1)');
+
+// ═══ NAV SCROLL ══════════════════════════════════════════
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('sc',scrollY>55);
+  updateProg();
+},{passive:true});
+
+// ═══ ROTATING TEXT ═══════════════════════════════════════
+const ROTS=['students.','business owners.','entrepreneurs.','employees.','people who want FUN.'];
+let ri=0; const rotEl=document.getElementById('hrot');
+if(rotEl){rotEl.style.transition='opacity .35s,transform .35s';setInterval(()=>{
+  rotEl.style.opacity='0';rotEl.style.transform='translateY(8px)';
+  setTimeout(()=>{ri=(ri+1)%ROTS.length;rotEl.textContent=ROTS[ri];rotEl.style.opacity='1';rotEl.style.transform='none';},350);
+},2600);}
+
+// ═══ COUNTDOWN ═══════════════════════════════════════════
+const TGT=Date.now()+1e3*60*60*24*180;
+function upCD(){
+  const diff=Math.max(0,TGT-Date.now());
+  const p=n=>String(n).padStart(2,'0');
+  [['d',Math.floor(diff/864e5)],['h',Math.floor(diff/36e5)%24],['m',Math.floor(diff/6e4)%60],['s',Math.floor(diff/1e3)%60]].forEach(([id,v])=>{
+    const el=document.getElementById('cd-'+id); if(!el)return;
+    const s=p(v); if(el.textContent===s)return;
+    el.style.transform='translateY(-6px)';el.style.opacity='0';
+    setTimeout(()=>{el.textContent=s;el.style.transform='none';el.style.opacity='1';},140);
+  });
+}
+['d','h','m','s'].forEach(id=>{const e=document.getElementById('cd-'+id);if(e)e.style.transition='all .14s ease';});
+upCD(); setInterval(upCD,1000);
+
+// ═══ SIDE SWITCH ═════════════════════════════════════════
+function switchSide(to){
+  if(busy||to===side)return;
+  busy=true;
+  const overlay=document.getElementById('portal');
+  overlay.style.background=to==='b'?'linear-gradient(135deg,#d4af37,#8b6914)':'linear-gradient(135deg,#e4e4e7,#a1a1aa)';
+  overlay.classList.remove('go'); void overlay.offsetWidth; overlay.classList.add('go');
+  setTimeout(()=>{
+    side=to;
+    document.getElementById('sa').style.display=to==='a'?'block':'none';
+    document.getElementById('sb').style.display=to==='b'?'block':'none';
+    const prog=document.getElementById('sb-prog');
+    prog.classList.toggle('show',to==='b');
+    document.getElementById('pb-a').className='pb'+(to==='a'?' digi':' dim');
+    document.getElementById('pb-b').className='pb'+(to==='b'?' offli':' dim');
+    document.getElementById('tc').classList.toggle('show',to==='b');
+    if(to==='b') initTC();
+    window.scrollTo(0,0);
+    setTimeout(()=>{reObserve();},100);
+  },480);
+  setTimeout(()=>{overlay.classList.remove('go');busy=false;},1250);
+}
+
+// ═══ SCROLL ANIMATIONS ═══════════════════════════════════
+function reObserve(){
+  document.querySelectorAll('.fiu,.j-item').forEach(el=>io.observe(el));
+}
+const io=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('on');});
+},{threshold:.08,rootMargin:'0px 0px -40px 0px'});
+reObserve();
+setTimeout(reObserve,600);
+
+// ═══ SB PROGRESS ═════════════════════════════════════════
+const SB_IDS=['th-hero','ch1','ch2','psychology','ch4','epilogue','gallery'];
+function updateProg(){
+  if(side!=='b')return;
+  let act=0;
+  SB_IDS.forEach((id,i)=>{const el=document.getElementById(id);if(!el)return;if(el.getBoundingClientRect().top<window.innerHeight*.5)act=i;});
+  document.querySelectorAll('.sp').forEach((d,i)=>d.classList.toggle('on',i===act));
+}
+function goTo(id){const el=document.getElementById(id);if(el)window.scrollTo({top:el.offsetTop-70,behavior:'smooth'});}
+
+// ═══ FLOATING THREADS ════════════════════════════════════
+let tcInit=false;
+let tmx=.5,tmy=.5;
+document.addEventListener('mousemove',e=>{tmx=e.clientX/innerWidth;tmy=e.clientY/innerHeight;},{passive:true});
+function initTC(){
+  if(tcInit)return; tcInit=true;
+  const cv=document.getElementById('tc'),ctx=cv.getContext('2d');
+  const nodes=[];
+  const resize=()=>{cv.width=innerWidth;cv.height=innerHeight;};
+  resize(); window.addEventListener('resize',resize,{passive:true});
+  for(let i=0;i<20;i++) nodes.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-.5)*.45,vy:(Math.random()-.5)*.45,r:Math.random()*3+1.5});
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    const mx=tmx*cv.width,my=tmy*cv.height;
+    nodes.forEach(n=>{
+      n.x+=n.vx+(mx-n.x)*.00025;n.y+=n.vy+(my-n.y)*.00025;
+      if(n.x<0||n.x>cv.width)n.vx*=-1;if(n.y<0||n.y>cv.height)n.vy*=-1;
+    });
+    nodes.forEach((a,i)=>nodes.forEach((b,j)=>{
+      if(j<=i)return;
+      const dx=b.x-a.x,dy=b.y-a.y,dist=Math.hypot(dx,dy);
+      if(dist<230){const al=(1-dist/230)*.22;ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(212,175,55,${al})`;ctx.lineWidth=.7;ctx.stroke();}
+    }));
+    nodes.forEach(n=>{ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle='rgba(212,175,55,.45)';ctx.fill();});
+    requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+// ═══ HERO PARALLAX ═══════════════════════════════════════
+document.addEventListener('mousemove',e=>{
+  const wm=document.getElementById('hwm'); if(!wm)return;
+  const x=(e.clientX/innerWidth-.5)*10,y=(e.clientY/innerHeight-.5)*5;
+  wm.style.transform=`translate(${x}px,${y}px)`;
+},{passive:true});
+
+// ═══ MAGNETIC BUTTONS ════════════════════════════════════
+function applyMagnetic(){
+  document.querySelectorAll('.btn,.nav-btn,.pb').forEach(b=>{
+    if(b._mag)return; b._mag=true;
+    b.addEventListener('mousemove',e=>{
+      const r=b.getBoundingClientRect();
+      const x=(e.clientX-r.left-r.width/2)*.22,y=(e.clientY-r.top-r.height/2)*.22;
+      b.style.transform=`translate(${x}px,${y}px)`;
+    });
+    b.addEventListener('mouseleave',()=>{b.style.transform='';});
+  });
+}
+applyMagnetic(); setInterval(applyMagnetic,2000);
+
+// ═══ WAITLIST ════════════════════════════════════════════
+function openWL(){document.getElementById('wl-modal').classList.add('open');}
+function closeWL(){document.getElementById('wl-modal').classList.remove('open');}
+document.getElementById('wl-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeWL();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeWL();closeErr();}});
+function submitWL(){
+  const n=document.getElementById('wl-name').value.trim(),em=document.getElementById('wl-email').value.trim();
+  const msg=document.getElementById('wl-msg');
+  if(!n||!em){msg.style.color='#f87171';msg.textContent='Please fill both fields.';return;}
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){msg.style.color='#f87171';msg.textContent='Enter a valid email.';return;}
+  msg.style.color='var(--accent)';msg.textContent='✓ You\'re on the list! We\'ll reach out soon.';
+  document.getElementById('wl-name').value='';document.getElementById('wl-email').value='';
+  setTimeout(closeWL,2400);
+}
+
+// ═══ ERROR MODAL ═════════════════════════════════════════
+window.__errOpen=false;
+window.showErr=function(msg){
+  window.__errOpen=true;
+  document.getElementById('err-msg').textContent=msg;
+  document.getElementById('err-modal').style.display='flex';
+};
+function closeErr(){window.__errOpen=false;document.getElementById('err-modal').style.display='none';}
+document.getElementById('err-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeErr();});
+</script>
+</body>
+</html>

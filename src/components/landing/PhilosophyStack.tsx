@@ -1,4 +1,5 @@
 import { useState } from 'react';
+
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { HapticManager } from '../../lib/HapticManager';
 

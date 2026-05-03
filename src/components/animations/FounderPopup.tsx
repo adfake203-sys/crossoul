@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Linkedin } from 'lucide-react';
 import { HapticManager } from '../../lib/HapticManager';
@@ -55,27 +56,28 @@ const FounderPopup: React.FC<FounderPopupProps> = ({ isOpen, onClose, founder, l
               position: 'absolute', 
               inset: 0, 
               backgroundColor: 'rgba(0,0,0,0.85)',
-              backdropFilter: 'blur(12px)'
+              backdropFilter: 'blur(4px)'
             }}
           />
 
           {/* Modal Content */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+            transition={{ type: 'tween', duration: 0.2 }}
             style={{ 
               position: 'relative', 
               width: '100%', 
               maxWidth: '360px', 
-              background: 'linear-gradient(160deg, rgba(24, 24, 27, 0.95) 0%, rgba(9, 9, 11, 0.98) 100%)', 
-              backdropFilter: 'blur(24px)',
+              background: 'linear-gradient(160deg, rgba(24, 24, 27, 0.98) 0%, rgba(9, 9, 11, 1) 100%)', 
+              backdropFilter: 'blur(8px)',
               borderRadius: '28px', 
               overflow: 'hidden',
-              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.9)',
+              boxShadow: '0 10px 30px -10px rgba(0,0,0,0.9)',
               border: '1px solid rgba(255, 255, 255, 0.1)',
-              color: '#fff'
+              color: '#fff',
+              willChange: 'transform, opacity'
             }}
           >
             {/* Minimal Top Glow */}

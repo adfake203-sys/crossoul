@@ -16,9 +16,9 @@ export default function PopupModal({ isOpen, onClose, type }: Props) {
       text: `Your privacy is important to us. This policy explains how we collect, use, and protect your data within the Crossoul ecosystem. We focus on mindful data handling, ensuring your digital footprint is used only to enhance your peer resonance and local connectivity. We never sell your data to third parties.`
     },
     terms: {
-      title: 'Terms of Service',
+      title: 'Terms & Conditions',
       icon: <FileText className="text-indigo-400" size={32} />,
-      text: `By using Crossoul, you agree to participate in a mindful, respectful community. Our platform is designed for authentic expression and peer resonance. We maintain a zero-tolerance policy for harassment or bad-faith actors. Users are responsible for the content they share and the offline connections they form.`
+      text: `By using Crossoul, you agree to participate in a mindful, respectful community. Our platform is designed for authentic expression and peer resonance. We maintain a zero-tolerance policy for harassment or bad-faith actors. Users are responsible for the content they share, the interactions they create, and the offline connections they form.`
     },
     contact: {
       title: 'Contact Us',

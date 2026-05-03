@@ -1,162 +1,143 @@
-import { useState, useEffect } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import '../styles/landing.css';
-import '../styles/transitions.css';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
-// Components
-
-import LiquidHero from '../components/landing/LiquidHero';
-import DigitalEcosystemManifesto from '../components/landing/DigitalEcosystemManifesto';
-import JourneySection from '../components/landing/JourneySection';
-import EcosystemFocus from '../components/landing/EcosystemFocus';
-import FoundersSection from '../components/landing/FoundersSection';
-import LaunchCountdown from '../components/landing/LaunchCountdown';
-import ModernFooter from '../components/landing/ModernFooter';
-import CrossoverToggle from '../components/landing/CrossoverToggle';
-import { HapticManager } from '../lib/HapticManager';
-import ThreadsHero from '../components/landing/ThreadsHero';
-import CircleGallery from '../components/landing/CircleGallery';
-import CircleOutcome from '../components/landing/CircleOutcome';
-import IdeathonProblem from '../components/landing/IdeathonProblem';
-import TheResonanceProtocol from '../components/landing/TheResonanceProtocol';
-import HumanPsychology from '../components/landing/HumanPsychology';
-import RefinedOutcome from '../components/landing/RefinedOutcome';
-import SideStoryProgress from '../components/landing/SideStoryProgress';
-import FloatingThreads from '../components/landing/FloatingThreads';
-
-import StickyHeader from '../components/landing/StickyHeader';
+import CustomCursor from '../components/layout/CustomCursor';
+import AmbientLayers from '../components/layout/AmbientLayers';
+import FloatingThreads from '../components/animations/FloatingThreads';
+import Nav from '../components/layout/Nav';
+import TogglePill from '../components/layout/TogglePill';
+import SideA from '../components/landing/SideA';
+import SideB from '../components/landing/SideB';
+import SideBProgress from '../components/landing/SideBProgress';
+import Confetti from '../components/animations/Confetti';
 import PopupModal from '../components/landing/PopupModal';
 
-interface Props {
+interface LandingPageProps {
   onShowAuth: () => void;
 }
 
-const VISION_CHAPTERS = [
-  { id: 'prologue', title: 'Start: The Core Belief' },
-  { id: 'chapter-1', title: 'The Dead End' },
-  { id: 'chapter-2', title: 'Protocol of Resonance' },
-  { id: 'chapter-3', title: 'The Human Drive' },
-  { id: 'chapter-4', title: 'Scientific Recognition' },
-  { id: 'epilogue', title: 'The Execution Bridge' },
-  { id: 'gallery', title: 'Visual Archive' }
-];
-
-export default function LandingPage({ onShowAuth }: Props) {
-  const [viewMode, setViewMode] = useState<'side-a' | 'side-b'>('side-a');
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  
-  // Legal & Contact Modal State
+export default function LandingPage({ onShowAuth }: LandingPageProps) {
+  const [side, setSide] = useState<'a' | 'b'>('a');
+  const [busy, setBusy] = useState(false);
+  const [errMsg, setErrMsg] = useState<string | null>(null);
   const [legalModal, setLegalModal] = useState<{ isOpen: boolean; type: 'privacy' | 'terms' | 'contact' }>({
     isOpen: false,
-    type: 'privacy'
+    type: 'privacy',
   });
 
-  const openLegal = (type: 'privacy' | 'terms' | 'contact') => {
-    setLegalModal({ isOpen: true, type });
-    document.body.classList.add('popup-active');
-  };
-
-  const closeLegal = () => {
-    setLegalModal(prev => ({ ...prev, isOpen: false }));
-    document.body.classList.remove('popup-active');
-  };
-
   useEffect(() => {
-    document.documentElement.style.scrollBehavior = 'smooth';
-    
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
+    const revealTargets = Array.from(document.querySelectorAll<HTMLElement>('.fiu, .j-item'));
+    if (!revealTargets.length) return;
 
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      document.documentElement.style.scrollBehavior = 'auto';
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+      revealTargets.forEach((el) => el.classList.add('on'));
+      return;
+    }
 
-  const handleToggle = () => {
-    HapticManager.notification();
-    setIsTransitioning(true);
-    // Timing for the "Portal" to cover the screen
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            requestAnimationFrame(() => entry.target.classList.add('on'));
+          } else {
+            entry.target.classList.remove('on');
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -8% 0px' }
+    );
+
+    revealTargets.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [side]);
+
+  const switchSide = (to: 'a' | 'b') => {
+    if (busy || to === side) return;
+    setBusy(true);
+
+    const overlay = document.getElementById('portal');
+    if (overlay) {
+      overlay.dataset.to = to;
+      const label = overlay.querySelector<HTMLElement>('#portal-label');
+      if (label) label.textContent = to === 'b' ? 'Thread of Thoughts' : 'Digital Ecosystem';
+      overlay.classList.remove('go');
+      void overlay.offsetWidth;
+      overlay.classList.add('go');
+    }
+
     setTimeout(() => {
-      setViewMode(prev => prev === 'side-a' ? 'side-b' : 'side-a');
-      window.scrollTo(0, 0);
-    }, 500);
-    
+      setSide(to);
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }, 640);
+
     setTimeout(() => {
-      setIsTransitioning(false);
-    }, 1200);
+      if (overlay) overlay.classList.remove('go');
+      setBusy(false);
+    }, 1550);
   };
 
   return (
-    <div className={`landing-page-wrapper ${viewMode === 'side-b' ? 'side-b-theme' : ''}`}>
-      <div className="mesh-bg" style={{ display: viewMode === 'side-b' ? 'block' : 'none' }}></div>
-      
-      <StickyHeader onJoin={onShowAuth} />
-      
-      {/* Super Transition Portal Overlay */}
-      <AnimatePresence>
-        {isTransitioning && (
-          <motion.div 
-            className="portal-transition-overlay"
-            initial={{ clipPath: 'circle(0% at 50% 90%)' }}
-            animate={{ clipPath: 'circle(150% at 50% 90%)' }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.2, ease: [0.6, 0.05, 0.1, 0.99] }}
-            style={{ 
-              background: viewMode === 'side-a' 
-                ? 'linear-gradient(135deg, #d4af37 0%, #8b6914 100%)' // Gold
-                : 'linear-gradient(135deg, #f4f4f5 0%, #a1a1aa 100%)', // Silver
-              zIndex: 99999,
-              userSelect: 'none'
-            }}
-          />
-        )}
-      </AnimatePresence>
-      
-      <CrossoverToggle mode={viewMode} onToggle={handleToggle} isScrolled={scrolled} />
+    <>
+      <CustomCursor />
+      <AmbientLayers />
+      <FloatingThreads show={side === 'b'} />
+      <Confetti />
 
-      {viewMode === 'side-b' && <SideStoryProgress chapters={VISION_CHAPTERS} />}
+      <Nav onJoinWaitlist={onShowAuth} />
+      <SideBProgress isVisible={side === 'b'} />
+      <TogglePill currentSide={side} onSwitch={switchSide} />
 
-      <main>
-        {viewMode === 'side-a' ? (
-          <div key="side-a">
-            <LiquidHero />
-            <DigitalEcosystemManifesto />
-            <JourneySection />
-            <EcosystemFocus onJoin={onShowAuth} />
-            <LaunchCountdown />
-            <FoundersSection />
-          </div>
-        ) : (
-          <div className="side-b-wrapper" key="side-b">
-            <FloatingThreads />
-            <ThreadsHero />
-            <IdeathonProblem />
-            <TheResonanceProtocol />
-            <HumanPsychology />
-            <RefinedOutcome />
-            <CircleOutcome />
-            <CircleGallery />
-          </div>
-        )}
-      </main>
-
-      <ModernFooter 
-        onJoin={onShowAuth} 
-        mode={viewMode} 
-        openPrivacy={() => openLegal('privacy')}
-        openTerms={() => openLegal('terms')}
-        openContact={() => openLegal('contact')}
+      <SideA
+        isVisible={side === 'a'}
+        onJoinWaitlist={onShowAuth}
+        onSwitchSide={() => switchSide('b')}
+        onError={setErrMsg}
+      />
+      <SideB
+        isVisible={side === 'b'}
+        onJoinWaitlist={onShowAuth}
       />
 
-      <PopupModal 
+      <footer>
+        <div className="f-logo">CROSSOUL</div>
+        <div className="f-legal">
+          <button onClick={() => setLegalModal({ isOpen: true, type: 'privacy' })}>Privacy</button>
+          <button onClick={() => setLegalModal({ isOpen: true, type: 'terms' })}>Terms & Conditions</button>
+          <button onClick={() => setLegalModal({ isOpen: true, type: 'contact' })}>Contact</button>
+        </div>
+        <p className="f-copy f-clear">Crossoul is a platform where ideas turn into real-world communities.</p>
+        <p className="f-copy">
+          Built by{' '}
+          <Link to="/kishan-kasula">Kishan Kasula</Link>
+          {' '}and{' '}
+          <Link to="/aditya-phanidar-vungarala">Aditya Phanidar Vungarala</Link>
+        </p>
+        <p className="f-copy">&copy; 2026 Crossoul. All rights reserved. Collective Thinking. Real Execution.</p>
+      </footer>
+
+      <PopupModal
         isOpen={legalModal.isOpen}
-        onClose={closeLegal}
         type={legalModal.type}
+        onClose={() => setLegalModal((prev) => ({ ...prev, isOpen: false }))}
       />
-    </div>
-  )
+
+      {errMsg && (
+        <div
+          id="err-modal"
+          style={{ position: 'fixed', inset: 0, zIndex: 99985, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,.85)', backdropFilter: 'blur(8px)', padding: '1.5rem' }}
+          onClick={(e) => { if (e.target === e.currentTarget) setErrMsg(null); }}
+        >
+          <div style={{ background: 'linear-gradient(135deg,#1e1e2e,#09090b)', padding: '2.5rem', borderRadius: '22px', border: '1px solid rgba(255,255,255,.1)', textAlign: 'center', maxWidth: '380px', width: '100%', boxShadow: '0 25px 50px rgba(0,0,0,.6)' }}>
+            <div style={{ marginBottom: '1rem', color: '#f87171' }}>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 15s1.5-2 4-2 4 2 4 2"/><line x1="9" y1="9" x2="9.01" y2="9" strokeWidth="3"/><line x1="15" y1="9" x2="15.01" y2="9" strokeWidth="3"/></svg>
+            </div>
+            <div style={{ fontSize: '1.4rem', fontWeight: 900, fontFamily: 'var(--fh)', marginBottom: '.8rem' }}>OOPS!</div>
+            <p style={{ color: '#a1a1aa', fontSize: '.98rem', lineHeight: 1.5, marginBottom: '2rem' }}>{errMsg}</p>
+            <button className="btn btn-o" onClick={() => setErrMsg(null)} style={{ padding: '.7rem 2rem' }}>LET'S DEBUG THIS</button>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+
 import { motion } from 'framer-motion';
 import Folder from '../animations/Folder';
 import FounderCard from '../animations/FounderCard';
@@ -28,7 +29,7 @@ const founders: FounderData[] = [
     type: "Co-Founder",
     photoSrc: "/cto.jpg",
     linkedIn: "https://www.linkedin.com/in/aditya-vungarala-813163291?utm_source=share_via&utm_content=profile&utm_medium=member_android",
-    bioPoints: ["Co-Founder of CROSSOUL", "Head of Engineering & Tech Architecture"]
+    bioPoints: ["Co-Founder of CROSSOUL", "CTO of CROSSOUL"]
   }
 ];
 

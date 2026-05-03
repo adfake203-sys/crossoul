@@ -1,15 +1,17 @@
-import { useState } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import LandingPage from './pages/LandingPage'
-import WaitlistModal from './components/landing/WaitlistModal'
-import KishanKasulaPage from './pages/KishanKasulaPage'
-import AdityaVungiralaPage from './pages/AdityaVungiralaPage'
+import { useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import LandingPage from './pages/LandingPage';
+import WaitlistModal from './components/landing/WaitlistModal';
+import KishanKasulaPage from './pages/KishanKasulaPage';
+import AdityaVungiralaPage from './pages/AdityaVungiralaPage';
+import ScrollToTop from './components/layout/ScrollToTop';
 
 function App() {
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <Routes>
         <Route
           path="/"
@@ -27,7 +29,7 @@ function App() {
         <Route path="/aditya-phanidar-vungarala" element={<AdityaVungiralaPage />} />
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -21,7 +21,7 @@ export default function CrossoverToggle({ mode, onToggle, isScrolled }: Props) {
       className="crossover-toggle-container"
       initial={false}
       animate={{
-        top: isScrolled ? 'calc(100svh - 4.5rem)' : '0.75rem',
+        y: isScrolled ? 'calc(100svh - 4.5rem)' : '0.75rem',
         scale: isScrolled ? 1 : 1,
         background: isScrolled ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255, 255, 255, 0.05)',
       }}
@@ -33,6 +33,7 @@ export default function CrossoverToggle({ mode, onToggle, isScrolled }: Props) {
       }}
       style={{
         position: 'fixed',
+        top: 0,
         left: '50%',
         x: '-50%',
         zIndex: 10000,
